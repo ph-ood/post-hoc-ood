@@ -35,8 +35,3 @@ size_train = len(df[df.split == "train"])
 size_test = len(df[df.split == "test"])
 print(f"Sizes: train: {size_train}, test: {size_test}")
 df.to_csv(f"{path}/data.csv", index = False)
-
-
-
-
-
