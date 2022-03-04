@@ -63,10 +63,10 @@ class VGG16(nn.Module):
 
         self.flatten = nn.Flatten(start_dim = 1, end_dim = -1)
 
-        self.fc1 = nn.FCBlock(512, 128)
+        self.fc1 = FCBlock(512, 128)
         self.drop1 = nn.Dropout(p = fc_dropout)
 
-        self.fc2 = nn.FCBlock(128, 128)
+        self.fc2 = FCBlock(128, 128)
         self.drop2 = nn.Dropout(p = fc_dropout) 
 
         self.out_layer = nn.Linear(in_features = 128, out_features = n_classes)

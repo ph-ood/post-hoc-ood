@@ -4,7 +4,7 @@ from torch.utils.data import Dataset
 
 class ImageDataset(Dataset):
 
-    def __init__(self, base_path, df, img_transform):
+    def __init__(self, path_base, df, img_transform):
         self.path_base = path_base
         self.df = df
         self.img_transform = img_transform

@@ -18,7 +18,7 @@ def train(model, loader, optimizer, criterion):
     epoch_loss = 0
     
     model.train()
-    for i, (imgs, labels) in enumerate(tqdm(loader)):
+    for imgs, labels in tqdm(loader):
 
         imgs = imgs.to(DEVICE) # [b, h, w]
         labels = labels.to(DEVICE) # [b,]
