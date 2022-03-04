@@ -12,6 +12,8 @@ Root directory structure:
 │     ├── test
 │     └── train
 ├── weights
+│  ├── cifar10
+│  └── mnist
 ├── results
 └── README.md
 

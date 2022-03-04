@@ -32,6 +32,8 @@ class VGG16(nn.Module):
 
         super(VGG16, self).__init__()
 
+        self.name = "vgg16"
+
         self.n_classes = n_classes
         self.fc_dropout = fc_dropout
         self.drop = self.fc_dropout > 0
