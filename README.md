@@ -28,16 +28,22 @@ Root directory structure:
 - Run `python3 mean_and_std.py <dataset_name>` to compute the channel-wise mean and std of the data and add these values to `config.py`
 
 ## Training a Classifier Model
-- `cd code`, add model definition to `models`
+- Add model definition to `models`
 - Change the model used in `run_classifier.py`
 - Run `python3 run_classifier.py <dataset_name>`
 - This saves the weights of the trained model in `weights/<dataset_name>` directory
+
+## Pretrained Scoring
+- Change pretrained model path in `test_ood.py`
+- Run `python3 test_ood.py -i <id_dataset_name> -o <ood_dataset_name> -s <score_name>`
+- This saves scores for ID and OOD data as `.npy` files in `results/raw`
+
+## Plots and Metrics for OOD Detection
+- Run `python3 analyze_scores.py -i <id_dataset_name> -o <ood_dataset_name> -s <score_name>`
+- This saves the density plots for the scores in `results/plots` 
 
 ## Running on Colab
 - Create a Google Drive folder having the same root structure and upload the data
 - Add a colab notebook to this folder, mount drive
 - `cd` to created folder and run the `.py` scripts from notebook command line
 - Sync to and from Drive when needed
-
-## Results
-
