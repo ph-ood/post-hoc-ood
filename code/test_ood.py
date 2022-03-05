@@ -40,7 +40,6 @@ def computeScores(model, loader, sname):
             labels = labels.to(DEVICE) # [b,]
 
             output = model(imgs) # [b, n_classes]
-            preds = output.argmax(dim = -1) # [b,]
 
             sb = score(output, sname)
             scores += sb.detach().cpu().tolist()
@@ -60,7 +59,7 @@ if __name__ == "__main__":
 
     # Get config for datas
     path_data_i = f"{PATH_DATA}/{dname_i}"
-    path_data_o = f"{PATH_DATA}/{dname_i}"
+    path_data_o = f"{PATH_DATA}/{dname_o}"
     
     data_mean_i = DATA_MEAN[dname_i]
     data_std_i = DATA_STD[dname_i]
