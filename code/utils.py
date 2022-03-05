@@ -119,7 +119,7 @@ def printMetrics(m):
 # Plotting
 
 def densityPlot(data, title = None, path_save = None):
-    ax = sns.kdeplot(data = data, fill = True, alpha = 0.25, palette = "crest")
+    ax = sns.kdeplot(data = data, fill = True, alpha = 0.25)
     sns.move_legend(ax, ncol = 2, loc = "best")
     if title is not None:
         plt.title(title)
@@ -127,6 +127,7 @@ def densityPlot(data, title = None, path_save = None):
     ymax = ymax + 0.1*ymax
     plt.ylim([ymin, ymax])
     plt.xlabel("Score")
+    plt.tight_layout()
     if path_save is not None:
         plt.savefig(path_save)
         plt.close()
