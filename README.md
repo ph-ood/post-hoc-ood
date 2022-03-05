@@ -15,6 +15,8 @@ Root directory structure:
 │  ├── cifar10
 │  └── mnist
 ├── results
+│  ├── plots
+│  └── raw
 └── README.md
 ```
   

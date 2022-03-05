@@ -3,6 +3,7 @@ SEED = 0
 PATH_DATA = "../data"
 PATH_WT = "../weights"
 PATH_RES = "../results"
+PATH_PLT = f"{PATH_RES}/plots"
 
 SPLITS = ["train", "test"]
 

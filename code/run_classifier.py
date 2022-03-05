@@ -176,8 +176,8 @@ if __name__ == "__main__":
     utils.printMetrics(test_metrics)
 
     # Save test predictions to original CSV data file
-    # df_test["pred"] = test_preds
-    # df_test.to_csv(f"{path_data}/test/data.csv")
+    df_test["pred"] = test_preds
+    df_test.to_csv(f"{path_data}/test/data.csv")
 
     # Save best model weights
-    # torch.save(model.state_dict(), f"{path_wt}/{model.name}_metric{best_metric:.4f}_epoch{n_epochs}.pt")
+    torch.save(best_model_state, f"{path_wt}/{model.name}_metric{best_metric:.4f}_epoch{n_epochs}.pt")

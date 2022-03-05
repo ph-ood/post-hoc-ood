@@ -9,18 +9,21 @@ from tqdm import tqdm
 from models.vgg16 import VGG16
 from dataset import ImageDataset
 from torchvision import transforms
+from torch.nn import functional as F
 from torch.utils.data import DataLoader
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--id", "-i", help = "In-Distribution dataset name")
-parser.add_argument("--ood", "-o", help = "Out-Of-Distribution dataset name")
-parser.add_argument("--score", "-s", help = "softmax/energy")
+parser.add_argument("--id", "-i", help = "In-Distribution dataset name", required = True)
+parser.add_argument("--ood", "-o", help = "Out-Of-Distribution dataset name", required = True)
+parser.add_argument("--score", "-s", help = "softmax/energy", required = True)
 
-def score(output, sname):
+def score(logits, sname):
+    # logits: [b, n_classes]
     if sname == "softmax":
-        s = 0
+        s, _ = (F.softmax(logits, dim = -1)).max(dim = -1) # [b,]
     elif sname == "energy":
-        s = 0
+        T = 1
+        s = T*torch.logsumexp(logits / T, dim = -1) # [b,]
     else:
         raise ValueError("Incorret score name")
     return s
@@ -39,9 +42,8 @@ def computeScores(model, loader, sname):
             output = model(imgs) # [b, n_classes]
             preds = output.argmax(dim = -1) # [b,]
 
-            # TBD: compute score
-            s = score(output, sname)
-            scores.append(s)
+            sb = score(output, sname)
+            scores += sb.detach().cpu().tolist()
 
     return scores
 
@@ -69,6 +71,11 @@ if __name__ == "__main__":
     n_classes = N_CLASSES[dname_i]
     batch_size = BATCH_SIZE[dname_i]
     path_wt = f"{PATH_WT}/{dname_i}"
+
+    model_name = "vgg16"
+    model_metric = 0.9881
+    model_epoch = 2
+    path_model_wt = f"{path_wt}/{model_name}_metric{model_metric:.4f}_epoch{model_epoch}.pt"
 
     # Load csv file
     df_i = pd.read_csv(f"{path_data_i}/data.csv")
@@ -109,11 +116,11 @@ if __name__ == "__main__":
     model.eval()
 
     # Test
-    print("Scoring on In-Distribution:")
-    scores_i = computeScores(model, dl_i)
-    print()
+    print("Computing In-Distribution Scores")
+    scores_i = computeScores(model, dl_i, sname)
+    print("Computing Out-Of-Distribution Scores")
+    scores_o = computeScores(model, dl_o, sname)
 
-    print("Scoring on Out-of-Distribution:")
-    scores_o = computeScores(model, dl_o)
-
-    # TBD: plot plots and metrics for scores
+    # Save scores
+    np.save(f"{PATH_RES}/raw/{dname_i}_{dname_o}_{sname}_id.npy", np.array(scores_i))
+    np.save(f"{PATH_RES}/raw/{dname_i}_{dname_o}_{sname}_ood.npy", np.array(scores_o))

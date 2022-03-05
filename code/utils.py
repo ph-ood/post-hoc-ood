@@ -2,7 +2,9 @@ import cv2
 import torch
 import random
 import numpy as np
+import seaborn as sns
 from matplotlib import pyplot as plt
+sns.set_theme()
 from sklearn.metrics import accuracy_score, f1_score
 
 def setSeed(seed):
@@ -68,3 +70,12 @@ def printMetrics(m):
     keys = sorted(m.keys())
     mt = " | ".join([f"{k} = {m[k]:.4f}" for k in keys])
     print(mt)
+
+def densityPlot(l_id, l_ood, path_save = None):
+    sns.kdeplot(data = {"ID" : np.array(l_id), "OOD" : np.array(l_ood)}, fill = True, alpha = 0.25, palette = "crest")
+    plt.xlabel("Score")
+    if path_save is not None:
+        plt.savefig(path_save)
+        plt.close()
+    else:
+        plt.show()
