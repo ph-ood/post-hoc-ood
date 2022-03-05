@@ -12,10 +12,15 @@ from torchvision import transforms
 from torch.nn import functional as F
 from torch.utils.data import DataLoader
 
+# Usage: python3 test_ood.py -i cifar10 -o mnist -s softmax -n vgg16 -m 0.6759 -e 2
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--id", "-i", help = "In-Distribution dataset name", required = True)
 parser.add_argument("--ood", "-o", help = "Out-Of-Distribution dataset name", required = True)
 parser.add_argument("--score", "-s", help = "softmax/energy", required = True)
+parser.add_argument("--name", "-n", help = "Model name", required = True)
+parser.add_argument("--metric", "-m", help = "Model classification metric", required = True)
+parser.add_argument("--epoch", "-e", help = "Model epochs trained", required = True)
 
 def score(logits, sname):
     # logits: [b, n_classes]
@@ -57,6 +62,10 @@ if __name__ == "__main__":
     dname_o = args.ood # ood data
     sname = args.score # score name
 
+    model_name = args.name
+    model_metric = float(args.metric)
+    model_epoch = args.epoch
+
     # Get config for datas
     path_data_i = f"{PATH_DATA}/{dname_i}"
     path_data_o = f"{PATH_DATA}/{dname_o}"
@@ -71,9 +80,6 @@ if __name__ == "__main__":
     batch_size = BATCH_SIZE[dname_i]
     path_wt = f"{PATH_WT}/{dname_i}"
 
-    model_name = "vgg16"
-    model_metric = 0.9881
-    model_epoch = 2
     path_model_wt = f"{path_wt}/{model_name}_metric{model_metric:.4f}_epoch{model_epoch}.pt"
 
     # Load csv file

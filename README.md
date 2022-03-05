@@ -35,7 +35,7 @@ Root directory structure:
 
 ## Pretrained Scoring
 - Change pretrained model path in `test_ood.py`
-- Run `python3 test_ood.py -i <id_dataset_name> -o <ood_dataset_name> -s <score_name>`
+- Run `python3 test_ood.py -i <id_dataset_name> -o <ood_dataset_name> -s <score_name> -n <model_name> -m <model_metric> -e <model_epochs>`
 - This saves scores for ID and OOD data as `.npy` files in `results/raw`
 
 ## Plots and Metrics for OOD Detection
