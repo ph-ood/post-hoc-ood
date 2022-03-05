@@ -1,6 +1,6 @@
-import sys
 import utils
 import torch
+import argparse
 import numpy as np
 import pandas as pd
 from torch import nn
@@ -11,7 +11,21 @@ from dataset import ImageDataset
 from torchvision import transforms
 from torch.utils.data import DataLoader
 
-def computeScores(model, loader):
+parser = argparse.ArgumentParser()
+parser.add_argument("--id", "-i", help = "In-Distribution dataset name")
+parser.add_argument("--ood", "-o", help = "Out-Of-Distribution dataset name")
+parser.add_argument("--score", "-s", help = "softmax/energy")
+
+def score(output, sname):
+    if sname == "softmax":
+        s = 0
+    elif sname == "energy":
+        s = 0
+    else:
+        raise ValueError("Incorret score name")
+    return s
+
+def computeScores(model, loader, sname):
     
     scores = []
     
@@ -26,8 +40,8 @@ def computeScores(model, loader):
             preds = output.argmax(dim = -1) # [b,]
 
             # TBD: compute score
-            score = 0
-            scores.append(score)
+            s = score(output, sname)
+            scores.append(s)
 
     return scores
 
@@ -37,8 +51,10 @@ if __name__ == "__main__":
     utils.setSeed(SEED)
     DEVICE = utils.getDevice()
 
-    dname_i = sys.argv[1] # in-distr. data
-    dname_o = sys.argv[2] # ood data
+    args = parser.parse_args()
+    dname_i = args.id # in-distr. data
+    dname_o = args.ood # ood data
+    sname = args.score # score name
 
     # Get config for datas
     path_data_i = f"{PATH_DATA}/{dname_i}"
@@ -46,6 +62,7 @@ if __name__ == "__main__":
     
     data_mean_i = DATA_MEAN[dname_i]
     data_std_i = DATA_STD[dname_i]
+
     data_mean_o = DATA_MEAN[dname_o]
     data_std_o = DATA_STD[dname_o]
     
@@ -78,8 +95,8 @@ if __name__ == "__main__":
     ])
 
     # Create dataset objects
-    ds_i  = ImageDataset(path_base = path_data, df = df_test_i, img_transform = transform_i)
-    ds_o  = ImageDataset(path_base = path_data, df = df_test_o, img_transform = transform_o)
+    ds_i  = ImageDataset(path_base = path_data_i, df = df_test_i, img_transform = transform_i)
+    ds_o  = ImageDataset(path_base = path_data_o, df = df_test_o, img_transform = transform_o)
 
     # Create dataloaders
     dl_i = DataLoader(ds_i, batch_size = batch_size, shuffle = False)
