@@ -57,6 +57,54 @@ def load(path, gray = False):
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     return img
 
+# Metrics (ref. for ood metrics: https://github.com/tayden/ood-metrics)
+
+def auroc(preds, labels):
+    """Calculate and return the area under the ROC curve using unthresholded predictions on the data and a binary true label.
+    
+    preds: array, shape = [n_samples]
+           Target scores, can either be probability estimates of the positive class, confidence values, or non-thresholded measure of decisions.
+           
+    labels: array, shape = [n_samples]
+            True binary labels in range {0, 1} or {-1, 1}.
+    """
+    fpr, tpr, _ = roc_curve(labels, preds)
+    return auc(fpr, tpr)
+
+def aupr(preds, labels):
+    """Calculate and return the area under the Precision Recall curve using unthresholded predictions on the data and a binary true label.
+    
+    preds: array, shape = [n_samples]
+           Target scores, can either be probability estimates of the positive class, confidence values, or non-thresholded measure of decisions.
+           
+    labels: array, shape = [n_samples]
+            True binary labels in range {0, 1} or {-1, 1}.
+    """
+    precision, recall, _ = precision_recall_curve(labels, preds)
+    return auc(recall, precision)
+
+def fprAt95(preds, labels):
+    """Return the FPR when TPR is at minimum 95%.
+        
+    preds: array, shape = [n_samples]
+           Target scores, can either be probability estimates of the positive class, confidence values, or non-thresholded measure of decisions.
+           
+    labels: array, shape = [n_samples]
+            True binary labels in range {0, 1} or {-1, 1}.
+    """
+    fpr, tpr, _ = roc_curve(labels, preds)
+    
+    if all(tpr < 0.95):
+        # No threshold allows TPR >= 0.95
+        return 0
+    elif all(tpr >= 0.95):    
+        # All thresholds allow TPR >= 0.95, so find lowest possible FPR
+        idxs = [i for i, x in enumerate(tpr) if x>=0.95]
+        return min(map(lambda idx: fpr[idx], idxs))
+    else:
+        # Linear interp between values to get FPR at TPR == 0.95
+        return np.interp(0.95, tpr, fpr)
+
 def computeMetrics(true, pred):
     acc = accuracy_score(true, pred)
     f1 = f1_score(true, pred, average = "macro")
@@ -70,6 +118,8 @@ def printMetrics(m):
     keys = sorted(m.keys())
     mt = " | ".join([f"{k} = {m[k]:.4f}" for k in keys])
     print(mt)
+
+# Plotting
 
 def densityPlot(data, title = None, path_save = None):
     ax = sns.kdeplot(data = data, fill = True, alpha = 0.25, palette = "crest")
@@ -85,3 +135,5 @@ def densityPlot(data, title = None, path_save = None):
         plt.close()
     else:
         plt.show()
+
+

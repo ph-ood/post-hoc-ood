@@ -50,3 +50,4 @@ Root directory structure:
 
 ## References
 - [Official Implementation](https://github.com/wetliu/energy_ood) (however, our code differs a lot from it)
+- [tayden/ood-metrics](https://github.com/tayden/ood-metrics)
