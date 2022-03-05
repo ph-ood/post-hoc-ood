@@ -3,6 +3,7 @@ import torch
 import random
 import numpy as np
 from matplotlib import pyplot as plt
+from sklearn.metrics import accuracy_score, f1_score
 
 def setSeed(seed):
     random.seed(seed)
@@ -53,3 +54,17 @@ def load(path, gray = False):
             raise ValueError(f"Image cannot be read: {path}")
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     return img
+
+def computeMetrics(true, pred):
+    acc = accuracy_score(true, pred)
+    f1 = f1_score(true, pred)
+    m = {
+        "acc" : acc,
+        "f1" : f1
+    }
+    return m
+
+def printMetrics(m):
+    keys = sorted(m.keys())
+    mt = " | ".join([f"{k} = {m[k]}" for k in keys])
+    print(mt)
