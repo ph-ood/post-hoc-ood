@@ -23,6 +23,7 @@ Root directory structure:
 - CIFAR-10: Download and extract from https://www.kaggle.com/swaroopkml/cifar10-pngs-in-folders
 - `cd code` and run `python3 data2csv.py <dataset_name>`,`<dataset_name>` can be `mnist/cifar10`
 - This will create a file `data.csv` in the `data/<dataset_name>` directory
+- Run `python3 mean_and_std.py <dataset_name>` to compute the channel-wise mean and std of the data
 
 ## Training a Classifier Model
 - `cd code`, add model definition to `models`
