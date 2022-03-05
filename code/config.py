@@ -39,6 +39,6 @@ LR = {
 }
 
 EPOCHS = {
-    "mnist" : 10,
-    "cifar10" : 10
+    "mnist" : 2,
+    "cifar10" : 2
 }

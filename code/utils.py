@@ -57,7 +57,7 @@ def load(path, gray = False):
 
 def computeMetrics(true, pred):
     acc = accuracy_score(true, pred)
-    f1 = f1_score(true, pred)
+    f1 = f1_score(true, pred, average = "macro")
     m = {
         "acc" : acc,
         "f1" : f1
@@ -66,5 +66,5 @@ def computeMetrics(true, pred):
 
 def printMetrics(m):
     keys = sorted(m.keys())
-    mt = " | ".join([f"{k} = {m[k]}" for k in keys])
+    mt = " | ".join([f"{k} = {m[k]:.4f}" for k in keys])
     print(mt)

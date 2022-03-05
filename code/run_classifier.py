@@ -58,8 +58,6 @@ def validate(model, loader, criterion):
             imgs = imgs.to(DEVICE) # [b, h, w]
             labels = labels.to(DEVICE) # [b,]
 
-            optimizer.zero_grad()
-
             output = model(imgs) # [b, n_classes]
             preds = output.argmax(dim = -1) # [b,]
 
@@ -143,6 +141,7 @@ if __name__ == "__main__":
     )
 
     # Train and validate
+    best_epoch = 0
     best_metric = 0
     best_model_state = None
     for epoch in range(n_epochs):
@@ -155,18 +154,25 @@ if __name__ == "__main__":
         train_metrics = utils.computeMetrics(train_true, train_preds)
         val_metrics = utils.computeMetrics(val_true, val_preds)
 
+        if val_metrics["f1"] > best_metric:
+            best_epoch = epoch + 1
+            best_metric = val_metrics["f1"]
+            best_model_state = deepcopy(model.state_dict())
+
         print(f"Train loss: {train_loss:.4f} | Val. loss: {val_loss:.4f}")
         utils.printMetrics(train_metrics)
         utils.printMetrics(val_metrics)
+        print()
 
-        train_losses.append(train_loss)
-        val_losses.append(val_loss)
+    print(f"Best epoch: {best_epoch} | Best F1: {best_metric:.4f}")
+    print()
 
     # Test
     print("Testing:")
     model.load_state_dict(best_model_state)
     test_loss, test_true, test_preds = validate(model, dl_test, criterion)
     test_metrics = utils.computeMetrics(test_true, test_preds)
+    print(f"Test loss: {test_loss:.4f}")
     utils.printMetrics(test_metrics)
 
     # Save test predictions to original CSV data file
