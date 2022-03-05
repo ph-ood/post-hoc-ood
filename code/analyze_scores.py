@@ -4,6 +4,8 @@ import numpy as np
 import pandas as pd
 from config import *
 
+# Usage: python3 analyze_scores.py -i mnist -o cifar10 -s energy
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--id", "-i", help = "In-Distribution dataset name", required = True)
 parser.add_argument("--ood", "-o", help = "Out-Of-Distribution dataset name", required = True)
@@ -22,6 +24,7 @@ if __name__ == "__main__":
     scores_o = np.load(f"{PATH_RES}/raw/{dname_i}_{dname_o}_{sname}_ood.npy")
 
     # Denisty plots for scores
-    utils.densityPlot(scores_i, scores_o, f"{PATH_PLT}/{dname_i}_{dname_o}_{sname}_density.png")
+    data = {f"ID ({dname_i})" : scores_i, f"OOD ({dname_o})" : scores_o}
+    utils.densityPlot(data, title = f"{sname.capitalize()} Score", path_save = f"{PATH_PLT}/{dname_i}_{dname_o}_{sname}_density.png")
 
     # TBD: Metrics for scores (FPR95, AUROC, AUPR)

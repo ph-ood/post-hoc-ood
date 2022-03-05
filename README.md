@@ -47,3 +47,6 @@ Root directory structure:
 - Add a colab notebook to this folder, mount drive
 - `cd` to created folder and run the `.py` scripts from notebook command line
 - Sync to and from Drive when needed
+
+## References
+- [Official Implementation](https://github.com/wetliu/energy_ood) (however, our code differs a lot from it)

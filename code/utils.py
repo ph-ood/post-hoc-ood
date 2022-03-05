@@ -71,8 +71,14 @@ def printMetrics(m):
     mt = " | ".join([f"{k} = {m[k]:.4f}" for k in keys])
     print(mt)
 
-def densityPlot(l_id, l_ood, path_save = None):
-    sns.kdeplot(data = {"ID" : np.array(l_id), "OOD" : np.array(l_ood)}, fill = True, alpha = 0.25, palette = "crest")
+def densityPlot(data, title = None, path_save = None):
+    ax = sns.kdeplot(data = data, fill = True, alpha = 0.25, palette = "crest")
+    sns.move_legend(ax, ncol = 2, loc = "best")
+    if title is not None:
+        plt.title(title)
+    ymin, ymax = ax.get_ylim()
+    ymax = ymax + 0.1*ymax
+    plt.ylim([ymin, ymax])
     plt.xlabel("Score")
     if path_save is not None:
         plt.savefig(path_save)
