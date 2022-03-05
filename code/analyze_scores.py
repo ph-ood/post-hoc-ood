@@ -27,4 +27,6 @@ if __name__ == "__main__":
     data = {f"ID ({dname_i})" : scores_i, f"OOD ({dname_o})" : scores_o}
     utils.densityPlot(data, title = f"{sname.capitalize()} Score", path_save = f"{PATH_PLT}/{dname_i}_{dname_o}_{sname}_density.png")
 
-    # TBD: Metrics for scores (FPR95, AUROC, AUPR)
+    # Metrics for scores (FPR95, AUROC, AUPR)
+    metrics = utils.computeOODMetrics(scores_i, scores_o)
+    utils.printMetrics(metrics)
