@@ -3,6 +3,7 @@ import torch
 import argparse
 import numpy as np
 import pandas as pd
+import scores as sc
 from torch import nn
 from config import *
 from tqdm import tqdm
@@ -25,10 +26,10 @@ parser.add_argument("--epoch", "-e", help = "Model epochs trained", required = T
 def score(logits, sname):
     # logits: [b, n_classes]
     if sname == "softmax":
-        s, _ = (F.softmax(logits, dim = -1)).max(dim = -1) # [b,]
+        s, _ = sc.softmaxScore(logits) # [b,]
     elif sname == "energy":
         T = 1
-        s = T*torch.logsumexp(logits / T, dim = -1) # [b,]
+        s = sc.energyScore(logits, T) # [b,]
     else:
         raise ValueError("Incorret score name")
     return s

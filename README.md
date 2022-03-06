@@ -33,6 +33,9 @@ Root directory structure:
 - Run `python3 run_classifier.py <dataset_name>`
 - This saves the weights of the trained model in `weights/<dataset_name>` directory
 
+## OOD Scores
+- To add/modify a OOD score, add it as a function in `scores.py`
+
 ## Pretrained Scoring
 - Change pretrained model path in `test_ood.py`
 - Run `python3 test_ood.py -i <id_dataset_name> -o <ood_dataset_name> -s <score_name> -n <model_name> -m <model_metric> -e <model_epochs>`
