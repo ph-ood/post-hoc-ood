@@ -173,7 +173,7 @@ if __name__ == "__main__":
     # Losses
     criterion = nn.CrossEntropyLoss() # assumes n_classes > 2 for all data used
     criterion = criterion.to(DEVICE)
-    criterion_ft = DualMarginLoss(m_i = 1, m_o = 1)
+    criterion_ft = DualMarginLoss(t = 1, m_i = 1, m_o = 1, alpha = 0.1)
     criterion_ft = criterion_ft.to(DEVICE)
 
     # Optimizer

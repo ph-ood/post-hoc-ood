@@ -38,6 +38,13 @@ Root directory structure:
 - Run `python3 test_ood.py -i <id_dataset_name> -o <ood_dataset_name> -s <score_name> -n <model_name> -m <model_metric> -e <model_epochs>`
 - This saves scores for ID and OOD data as `.npy` files in `results/raw`
 
+## OOD Finetuning
+- Run `python3 finetune_ood.py  -i <id_dataset_name> -f <finetune_dataset_name> -n <model_name> -m <model_metric> -e <model_epochs>`
+- This behaves like `run_classifier.py` and saves the model and the test predictions in the same way
+
+## Finetuning Losses
+- To add/modify a finetuning loss, add it as a `nn.Module` in `losses.py`
+
 ## Plots and Metrics for OOD Detection
 - Run `python3 analyze_scores.py -i <id_dataset_name> -o <ood_dataset_name> -s <score_name>`
 - This saves the density plots for the scores in `results/plots` 
