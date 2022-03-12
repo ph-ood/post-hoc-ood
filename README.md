@@ -23,9 +23,14 @@ Root directory structure:
 ## Data
 - MNIST: Download and extract from https://github.com/myleott/mnist_png/blob/master/mnist_png.tar.gz 
 - CIFAR-10: Download and extract from https://www.kaggle.com/swaroopkml/cifar10-pngs-in-folders
-- `cd code` and run `python3 data2csv.py <dataset_name>`,`<dataset_name>` can be `mnist/cifar10`
+- Run `python3 data2csv.py <dataset_name>`,`<dataset_name>` can be `mnist/cifar10`
 - This will create a file `data.csv` in the `data/<dataset_name>` directory
 - Run `python3 mean_and_std.py <dataset_name>` to compute the channel-wise mean and std of the data and add these values to `config.py`
+
+## Data Subsets
+- Run `python3 split_data -d <dataset_name> -s <subset>`
+- This creates a new dataset in the `data/` directory with the name `<dataset_name>_<ext>` with only the data from the specified subset
+- For example, `python3 split_data -d mnist -s "3,5,6,9"` creates a new dataset `mnist_3569` with only the specified classes
 
 ## Training a Classifier Model
 - Add model definition to `models`

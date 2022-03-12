@@ -7,8 +7,7 @@ from pathlib import Path
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--dname", "-d", help = "Dataset name", required = True)
-parser.add_argument("--subset_1", "-s1", help = "First subset, format: \"class1, class2, ...\"", required = True)
-parser.add_argument("--subset_2", "-s2", help = "Second subset, format: \"class1, class2, ...\"", required = True)
+parser.add_argument("--subset", "-s", help = "The subset, format: \"class1, class2, ...\"", required = True)
 
 def sub2ext(sub):
     # first char of each class concatendated
@@ -26,43 +25,30 @@ if __name__ == "__main__":
     
     args = parser.parse_args()
     dname = args.dname
-    sub1 = [s.trim() for s in args.subset_1.split(",")]
-    sub2 = [s.trim() for s in args.subset_2.split(",")]
-
-    ext1 = sub2ext(sub1)
-    ext2 = sub2ext(sub2)
-    if ext1 == ext2:
-        raise ValueError("Both sets of classes yield the same extension")
+    sub = [s.trim() for s in args.subset.split(",")]
 
     # Get config for data
     path_data = f"{PATH_DATA}/{dname}"
 
-    # Output data paths
-    path_data1 = f"{path_data}_{ext1}"
-    path_data2 = f"{path_data}_{ext2}"
+    # Output data path
+    ext = sub2ext(sub)
+    path_sub = f"{path_data}_{ext}"
 
-    # Create them if they don't exist
-    Path(path_data1).mkdir(parents = True, exist_ok = True)
-    Path(path_data2).mkdir(parents = True, exist_ok = True)
+    # Create it if it doesn't exist
+    Path(path_sub).mkdir(parents = True, exist_ok = True)
 
     # Load csv file
     df = pd.read_csv(f"{path_data}/data.csv")
 
-    # Get subsets
-    df1 = df[df["class"].isin(sub1)]
-    df1.reset_index(inplace = True, drop = True)
-    df2 = df[df["class"].isin(sub2)]
-    df2.reset_index(inplace = True, drop = True)
+    # Get subset
+    dfs = df[df["class"].isin(sub)]
+    dfs.reset_index(inplace = True, drop = True)
 
-    if len(df1) == 0:
-        raise ValueError("df1 is empty")
-    if len(df2) == 0:
-        raise ValueError("df2 is empty")
+    if len(dfs) == 0:
+        raise ValueError("Given subset has no samples")
 
     # Copy everything
-    copyDf(df1, path_data, path_data1)
-    copyDf(df2, path_data, path_data2)
-    
+    copyDf(dfs, path_data, path_sub)
+
     # Save CSVs
-    df1.to_csv(f"{path_data1}/data.csv", index = False)
-    df2.to_csv(f"{path_data2}/data.csv", index = False)
+    dfs.to_csv(f"{path_sub}/data.csv", index = False)
