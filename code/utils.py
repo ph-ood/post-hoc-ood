@@ -57,6 +57,13 @@ def load(path, gray = False):
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     return img
 
+def save(img, path):
+    if img.ndim == 2:
+        cmap = "gray"
+    else:
+        cmap = None
+    plt.imsave(path, img, cmap = cmap)
+
 # Metrics (ref. for ood metrics: https://github.com/tayden/ood-metrics)
 
 def AUROC(preds, labels):

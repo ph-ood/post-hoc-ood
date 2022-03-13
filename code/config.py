@@ -4,6 +4,7 @@ PATH_DATA = "../data"
 PATH_WT = "../weights"
 PATH_RES = "../results"
 PATH_PLT = f"{PATH_RES}/plots"
+PATH_EXAMPLES = "../examples"
 
 SPLITS = ["train", "test"]
 
