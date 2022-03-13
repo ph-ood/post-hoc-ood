@@ -1,6 +1,8 @@
 import shutil
 import argparse
 import pandas as pd
+from config import *
+from tqdm import tqdm
 from pathlib import Path
 
 # Splits a dataset into the subsets of classes given
@@ -14,7 +16,7 @@ def sub2ext(sub):
     return "".join([s[0] for s in sub]) 
 
 def copyDf(df, path_base_src, path_base_dst):
-    for i in range(len(df)):
+    for i in tqdm(range(len(df))):
         row = df.iloc[i]
         fpath = row["path"]
         path_src = f"{path_base_src}/{fpath}"
@@ -25,7 +27,7 @@ if __name__ == "__main__":
     
     args = parser.parse_args()
     dname = args.dname
-    sub = [s.trim() for s in args.subset.split(",")]
+    sub = [s.strip() for s in args.subset.split(",")]
 
     # Get config for data
     path_data = f"{PATH_DATA}/{dname}"
@@ -34,14 +36,16 @@ if __name__ == "__main__":
     ext = sub2ext(sub)
     path_sub = f"{path_data}_{ext}"
 
-    # Create it if it doesn't exist
-    Path(path_sub).mkdir(parents = True, exist_ok = True)
-
     # Load csv file
     df = pd.read_csv(f"{path_data}/data.csv")
 
+    # Create dirs if they don't exist
+    for s in sub:
+        for sp in SPLITS:
+            Path(f"{path_sub}/{sp}/{s}").mkdir(parents = True, exist_ok = True)
+
     # Get subset
-    dfs = df[df["class"].isin(sub)]
+    dfs = df[df["class"].astype(str).isin(sub)]
     dfs.reset_index(inplace = True, drop = True)
 
     if len(dfs) == 0:

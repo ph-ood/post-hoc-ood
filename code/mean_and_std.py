@@ -8,6 +8,7 @@ from torchvision import transforms
 from torch.utils.data import DataLoader
 
 # Computes channel-wise mean and std for a given dataset
+# Usage: python3 mean_and_std.py mnist
 
 def meanAndStd(loader):
     n, s, s2 = 0, 0, 0
@@ -40,6 +41,7 @@ if __name__ == "__main__":
     dl_train = DataLoader(ds_train, batch_size = 32, shuffle = False)
 
     mean, std = meanAndStd(dl_train)
+    print(f"Dataset: {dname}")
     print(f"Mean: {mean}")
     print(f"Std.: {std}")
 

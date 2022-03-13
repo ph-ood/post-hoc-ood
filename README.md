@@ -28,7 +28,7 @@ Root directory structure:
 - Run `python3 mean_and_std.py <dataset_name>` to compute the channel-wise mean and std of the data and add these values to `config.py`
 
 ## Data Subsets
-- Run `python3 split_data -d <dataset_name> -s <subset>`
+- Run `python3 split_data.py -d <dataset_name> -s <subset>`
 - This creates a new dataset in the `data/` directory with the name `<dataset_name>_<ext>` with only the data from the specified subset
 - For example, `python3 split_data -d mnist -s "3,5,6,9"` creates a new dataset `mnist_3569` with only the specified classes
 

@@ -27,7 +27,7 @@ class ImageDataset(Dataset):
         if self.img_transform:
             img = self.img_transform(img)
 
-        if self.labelled
+        if self.labelled:
             return img, label
         else:
             return img

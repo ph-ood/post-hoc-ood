@@ -1,6 +1,5 @@
 import torch
-import numpy as np
-import torch.nn.functional as F
+from torch.nn import functional as F
 
 class ShufflePatch:
   # Reference: https://stackoverflow.com/a/66963266
@@ -26,6 +25,7 @@ class ShufflePatch:
 if __name__ == "__main__":
 
     import utils
+    import numpy as np
     from config import *
 
     asp = ShufflePatch(patch_size = 14)
