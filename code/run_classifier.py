@@ -184,4 +184,4 @@ if __name__ == "__main__":
     df_test.to_csv(f"{path_data}/test/data.csv")
 
     # Save best model weights
-    torch.save(best_model_state, f"{path_wt}/{model.name}_metric{best_metric:.4f}_epoch{best_epoch + 1}.pt")
+    torch.save(best_model_state, f"{path_wt}/{model.name}_metric{best_metric:.4f}_epoch{best_epoch}.pt")
