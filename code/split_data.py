@@ -1,3 +1,4 @@
+import utils
 import shutil
 import argparse
 import pandas as pd
@@ -27,7 +28,7 @@ if __name__ == "__main__":
     
     args = parser.parse_args()
     dname = args.dname
-    sub = [s.strip() for s in args.subset.split(",")]
+    sub = sorted([s.strip() for s in args.subset.split(",")])
 
     # Get config for data
     path_data = f"{PATH_DATA}/{dname}"
@@ -48,6 +49,8 @@ if __name__ == "__main__":
     dfs = df[df["class"].astype(str).isin(sub)]
     dfs.reset_index(inplace = True, drop = True)
 
+    class2label = utils.classes2labels(sub)
+    dfs["label"] = dfs["class"].apply(lambda x: class2label[str(x)])
     if len(dfs) == 0:
         raise ValueError("Given subset has no samples")
 

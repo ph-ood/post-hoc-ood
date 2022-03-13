@@ -26,7 +26,7 @@ parser.add_argument("--epoch", "-e", help = "Model epochs trained", required = T
 def score(logits, sname):
     # logits: [b, n_classes]
     if sname == "softmax":
-        s, _ = sc.softmaxScore(logits) # [b,]
+        s = sc.softmaxScore(logits) # [b,]
     elif sname == "energy":
         T = 1
         s = sc.energyScore(logits, T) # [b,]

@@ -21,7 +21,7 @@ class ImageDataset(Dataset):
         img = utils.load(f"{self.path_base}/{loc}", gray = False) # [h, w, c]
 
         if self.labelled:
-            label = row["label"]
+            label = int(row["label"])
 
         img = Image.fromarray(img) # convert to PIL
         if self.img_transform:

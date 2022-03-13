@@ -7,6 +7,7 @@ from torch import nn
 from config import *
 from tqdm import tqdm
 from torch import optim
+from pathlib import Path
 from copy import deepcopy
 from models.vgg16 import VGG16
 from dataset import ImageDataset
@@ -90,6 +91,9 @@ if __name__ == "__main__":
     n_classes = N_CLASSES[dname]
     n_epochs = EPOCHS[dname] 
 
+    # Create dir if doesn't exist
+    Path(path_wt).mkdir(parents = True, exist_ok = True)
+
     # Load csv file
     df = pd.read_csv(f"{path_data}/data.csv")
 
@@ -154,7 +158,7 @@ if __name__ == "__main__":
         train_metrics = utils.computeMetrics(train_true, train_preds)
         val_metrics = utils.computeMetrics(val_true, val_preds)
 
-        if val_metrics["f1"] > best_metric:
+        if val_metrics["f1"] > best_metric and (epoch + 1) >= 5:
             best_epoch = epoch + 1
             best_metric = val_metrics["f1"]
             best_model_state = deepcopy(model.state_dict())
@@ -180,4 +184,4 @@ if __name__ == "__main__":
     df_test.to_csv(f"{path_data}/test/data.csv")
 
     # Save best model weights
-    torch.save(best_model_state, f"{path_wt}/{model.name}_metric{best_metric:.4f}_epoch{n_epochs}.pt")
+    torch.save(best_model_state, f"{path_wt}/{model.name}_metric{best_metric:.4f}_epoch{best_epoch + 1}.pt")

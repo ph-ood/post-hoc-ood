@@ -15,7 +15,9 @@ CLASSES = {
 
 N_CLASSES = {
     "mnist" : 10,
-    "cifar10" : 10
+    "cifar10" : 10,
+    "mnist_01247" : 5,
+    "mnist_35689" : 5,
 }
 
 DATA_MEAN = {
@@ -37,14 +39,20 @@ IMG_SIZE = 32
 BATCH_SIZE = {
     "mnist" : 128,
     "cifar10" : 128,
+    "mnist_01247" : 128,
+    "mnist_35689" : 128,
 }
 
 LR = {
     "mnist" : 1e-4,
-    "cifar10" : 1e-4
+    "cifar10" : 1e-4,
+    "mnist_01247" : 1e-4,
+    "mnist_35689" : 1e-4,
 }
 
 EPOCHS = {
     "mnist" : 2,
-    "cifar10" : 2
+    "cifar10" : 2,
+    "mnist_01247" : 5,
+    "mnist_35689" : 5,
 }
