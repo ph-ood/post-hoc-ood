@@ -3,6 +3,7 @@ import torch
 import random
 import numpy as np
 import seaborn as sns
+from skimage import transform
 from matplotlib import pyplot as plt
 sns.set_theme()
 from sklearn.metrics import accuracy_score, f1_score, roc_curve, auc, precision_recall_curve
@@ -63,6 +64,36 @@ def save(img, path):
     else:
         cmap = None
     plt.imsave(path, img, cmap = cmap)
+
+# Preprocessing
+
+def minMaxNormalize(x):
+    x = np.float32(x)
+    x = x - x.min()
+    x = x / x.max()
+    return x
+
+def zScore(t, batched = False):
+    if batched:
+        t = t.squeeze(0)
+    mean, std = t.mean(dim = (1, 2), keepdim = True), t.std(dim = (1, 2), keepdim = True)
+    z = (t - mean) / std
+    if batched:
+        z = z.unsqueeze(0)
+    return z
+
+def normalize255(x):
+    y = minMaxNormalize(x)
+    y = np.around(255*y)
+    y = np.maximum(y, 0)
+    y = np.minimum(y, 255)
+    y = np.uint8(y)
+    return y
+
+def resize(img, size):
+    res = transform.resize(img, (size, size))
+    res = np.around(255*res).astype(np.uint8)
+    return res
 
 # Metrics (ref. for ood metrics: https://github.com/tayden/ood-metrics)
 

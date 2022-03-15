@@ -15,20 +15,24 @@ class FCBlock(nn.Module):
 
 class ConvBlock(nn.Module):
 
-    def __init__(self, in_channels, out_channels, kernel_size = 3, padding = 1):
+    def __init__(self, in_channels, out_channels, use_bn, kernel_size = 3, padding = 1):
         super(ConvBlock, self).__init__()
-        self.b = nn.Sequential(
-            nn.Conv2d(in_channels = in_channels, out_channels = out_channels, kernel_size = kernel_size, padding = padding),
-            nn.BatchNorm2d(out_channels),
-            nn.ReLU(inplace = True)
-        )
+        self.conv = nn.Conv2d(in_channels = in_channels, out_channels = out_channels, kernel_size = kernel_size, padding = padding)
+        if use_bn:
+            self.bn = nn.BatchNorm2d(out_channels)
+        self.relu = nn.ReLU(inplace = True)
+        self.use_bn = use_bn
 
     def forward(self, x):
-        return self.b(x)
+        y = self.conv(x)
+        if self.use_bn:
+            y = self.bn(y)
+        y = self.relu(y)
+        return y
 
 class VGG16(nn.Module):
 
-    def __init__(self, n_classes, fc_dropout = 0):
+    def __init__(self, n_classes, use_bn, fc_dropout = 0):
 
         super(VGG16, self).__init__()
 
@@ -38,27 +42,27 @@ class VGG16(nn.Module):
         self.fc_dropout = fc_dropout
         self.drop = self.fc_dropout > 0
 
-        self.b11 = ConvBlock(in_channels = 3, out_channels = 64)
-        self.b12 = ConvBlock(in_channels = 64, out_channels = 64)
+        self.b11 = ConvBlock(in_channels = 3, out_channels = 64, use_bn = use_bn)
+        self.b12 = ConvBlock(in_channels = 64, out_channels = 64, use_bn = use_bn)
         self.mp1 = nn.MaxPool2d(kernel_size = 2, stride = 2)
 
-        self.b21 = ConvBlock(in_channels = 64, out_channels = 128)
-        self.b22 = ConvBlock(in_channels = 128, out_channels = 128)
+        self.b21 = ConvBlock(in_channels = 64, out_channels = 128, use_bn = use_bn)
+        self.b22 = ConvBlock(in_channels = 128, out_channels = 128, use_bn = use_bn)
         self.mp2 = nn.MaxPool2d(kernel_size = 2, stride = 2)
 
-        self.b31 = ConvBlock(in_channels = 128, out_channels = 256)
-        self.b32 = ConvBlock(in_channels = 256, out_channels = 256)
-        self.b33 = ConvBlock(in_channels = 256, out_channels = 256)
+        self.b31 = ConvBlock(in_channels = 128, out_channels = 256, use_bn = use_bn)
+        self.b32 = ConvBlock(in_channels = 256, out_channels = 256, use_bn = use_bn)
+        self.b33 = ConvBlock(in_channels = 256, out_channels = 256, use_bn = use_bn)
         self.mp3 = nn.MaxPool2d(kernel_size = 2, stride = 2)
 
-        self.b41 = ConvBlock(in_channels = 256, out_channels = 512)
-        self.b42 = ConvBlock(in_channels = 512, out_channels = 512)
-        self.b43 = ConvBlock(in_channels = 512, out_channels = 512)
+        self.b41 = ConvBlock(in_channels = 256, out_channels = 512, use_bn = use_bn)
+        self.b42 = ConvBlock(in_channels = 512, out_channels = 512, use_bn = use_bn)
+        self.b43 = ConvBlock(in_channels = 512, out_channels = 512, use_bn = use_bn)
         self.mp4 = nn.MaxPool2d(kernel_size = 2, stride = 2)
 
-        self.b51 = ConvBlock(in_channels = 512, out_channels = 512)
-        self.b52 = ConvBlock(in_channels = 512, out_channels = 512)
-        self.b53 = ConvBlock(in_channels = 512, out_channels = 512)
+        self.b51 = ConvBlock(in_channels = 512, out_channels = 512, use_bn = use_bn)
+        self.b52 = ConvBlock(in_channels = 512, out_channels = 512, use_bn = use_bn)
+        self.b53 = ConvBlock(in_channels = 512, out_channels = 512, use_bn = use_bn)
         self.mp5 = nn.MaxPool2d(kernel_size = 2, stride = 2)
 
         self.flatten = nn.Flatten(start_dim = 1, end_dim = -1)

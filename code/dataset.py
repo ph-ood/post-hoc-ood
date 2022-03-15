@@ -4,11 +4,12 @@ from torch.utils.data import Dataset
 
 class ImageDataset(Dataset):
 
-    def __init__(self, path_base, df, img_transform, labelled = True):
+    def __init__(self, path_base, df, img_transform, postprocess = False, labelled = True):
         self.path_base = path_base
         self.df = df
         self.img_transform = img_transform
         self.labelled = labelled
+        self.postprocess = postprocess
 
     def __len__(self):
         return len(self.df)
@@ -26,6 +27,9 @@ class ImageDataset(Dataset):
         img = Image.fromarray(img) # convert to PIL
         if self.img_transform:
             img = self.img_transform(img)
+
+        if self.postprocess:
+            img = utils.zScore(img)
 
         if self.labelled:
             return img, label

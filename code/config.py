@@ -22,6 +22,9 @@ N_CLASSES = {
     "mnist_35689" : 5,
 }
 
+USE_BN = False
+USE_STD = False
+
 DATA_MEAN = {
     "mnist" : [0.1309, 0.1309, 0.1309],
     "fmnist" : [0.2856, 0.2856, 0.2856],

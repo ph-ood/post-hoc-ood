@@ -20,12 +20,15 @@ if __name__ == "__main__":
     dname_o = args.ood # ood data
     sname = args.score # score name
 
-    scores_i = np.load(f"{PATH_RES}/raw/{dname_i}_{dname_o}_{sname}_id.npy")
-    scores_o = np.load(f"{PATH_RES}/raw/{dname_i}_{dname_o}_{sname}_ood.npy")
+    str_bn = "bn" if USE_BN else "no_bn"
+    str_std = "std" if USE_STD else "no_std"
+
+    scores_i = np.load(f"{PATH_RES}/raw/{str_bn}_{str_std}_{dname_i}_{dname_o}_{sname}_id.npy")
+    scores_o = np.load(f"{PATH_RES}/raw/{str_bn}_{str_std}_{dname_i}_{dname_o}_{sname}_ood.npy")
 
     # Denisty plots for scores
     data = {f"ID ({dname_i})" : scores_i, f"OOD ({dname_o})" : scores_o}
-    utils.densityPlot(data, title = f"{sname.capitalize()} Score", path_save = f"{PATH_PLT}/{dname_i}_{dname_o}_{sname}_density.png")
+    utils.densityPlot(data, title = f"{sname.capitalize()} Score", path_save = f"{PATH_PLT}/{str_bn}_{str_std}_{dname_i}_{dname_o}_{sname}_density.png")
 
     # Metrics for scores (FPR95, AUROC, AUPR)
     metrics = utils.computeOODMetrics(scores_i, scores_o)

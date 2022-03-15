@@ -81,7 +81,9 @@ if __name__ == "__main__":
     batch_size = BATCH_SIZE[dname_i]
     path_wt = f"{PATH_WT}/{dname_i}"
 
-    path_model_wt = f"{path_wt}/{model_name}_metric{model_metric:.4f}_epoch{model_epoch}.pt"
+    str_bn = "bn" if USE_BN else "no_bn"
+    str_std = "std" if USE_STD else "no_std"
+    path_model_wt = f"{path_wt}/{model_name}_{str_bn}_{str_std}_metric{model_metric:.4f}_epoch{model_epoch}.pt"
 
     # Load csv file
     df_i = pd.read_csv(f"{path_data_i}/data.csv")
@@ -96,27 +98,37 @@ if __name__ == "__main__":
 
     # Define transforms
     interpolation = transforms.functional.InterpolationMode.BILINEAR
-    transform_i = transforms.Compose([
-        transforms.Resize(size = (IMG_SIZE, IMG_SIZE), interpolation = interpolation),
-        transforms.ToTensor(),
-        transforms.Normalize(data_mean_i, data_std_i)
-    ])
-    transform_o = transforms.Compose([
-        transforms.Resize(size = (IMG_SIZE, IMG_SIZE), interpolation = interpolation),
-        transforms.ToTensor(),
-        transforms.Normalize(data_mean_o, data_std_o)
-    ])
+    if USE_STD:
+        transform_i = transforms.Compose([
+            transforms.Resize(size = (IMG_SIZE, IMG_SIZE), interpolation = interpolation),
+            transforms.ToTensor(),
+            transforms.Normalize(data_mean_i, data_std_i)
+        ])
+        transform_o = transforms.Compose([
+            transforms.Resize(size = (IMG_SIZE, IMG_SIZE), interpolation = interpolation),
+            transforms.ToTensor(),
+            transforms.Normalize(data_mean_o, data_std_o)
+        ])
+    else:
+        transform_i = transforms.Compose([
+            transforms.Resize(size = (IMG_SIZE, IMG_SIZE), interpolation = interpolation),
+            transforms.ToTensor(),
+        ])
+        transform_o = transforms.Compose([
+            transforms.Resize(size = (IMG_SIZE, IMG_SIZE), interpolation = interpolation),
+            transforms.ToTensor()
+        ])
 
     # Create dataset objects
-    ds_i  = ImageDataset(path_base = path_data_i, df = df_test_i, img_transform = transform_i)
-    ds_o  = ImageDataset(path_base = path_data_o, df = df_test_o, img_transform = transform_o)
+    ds_i  = ImageDataset(path_base = path_data_i, df = df_test_i, img_transform = transform_i, postprocess = not USE_STD)
+    ds_o  = ImageDataset(path_base = path_data_o, df = df_test_o, img_transform = transform_o, postprocess = not USE_STD)
 
     # Create dataloaders
     dl_i = DataLoader(ds_i, batch_size = batch_size, shuffle = False)
     dl_o = DataLoader(ds_o, batch_size = batch_size, shuffle = False)
 
     # Load model
-    model = VGG16(n_classes = n_classes, fc_dropout = 0.25)
+    model = VGG16(n_classes = n_classes, use_bn = USE_BN, fc_dropout = 0.25)
     model.load_state_dict(torch.load(path_model_wt))
     model = model.to(DEVICE)
     model.eval()
@@ -128,5 +140,5 @@ if __name__ == "__main__":
     scores_o = computeScores(model, dl_o, sname)
 
     # Save scores
-    np.save(f"{PATH_RES}/raw/{dname_i}_{dname_o}_{sname}_id.npy", np.array(scores_i))
-    np.save(f"{PATH_RES}/raw/{dname_i}_{dname_o}_{sname}_ood.npy", np.array(scores_o))
+    np.save(f"{PATH_RES}/raw/{str_bn}_{str_std}_{dname_i}_{dname_o}_{sname}_id.npy", np.array(scores_i))
+    np.save(f"{PATH_RES}/raw/{str_bn}_{str_std}_{dname_i}_{dname_o}_{sname}_ood.npy", np.array(scores_o))

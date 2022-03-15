@@ -109,21 +109,31 @@ if __name__ == "__main__":
 
     # Define transforms
     interpolation = transforms.functional.InterpolationMode.BILINEAR
-    train_transform = transforms.Compose([
-        transforms.Resize(size = (IMG_SIZE, IMG_SIZE), interpolation = interpolation),
-        transforms.ToTensor(),
-        transforms.Normalize(data_mean, data_std)
-    ])
-    val_transform = transforms.Compose([
-        transforms.Resize(size = (IMG_SIZE, IMG_SIZE), interpolation = interpolation),
-        transforms.ToTensor(),
-        transforms.Normalize(data_mean, data_std)
-    ])
+    if USE_STD:
+        train_transform = transforms.Compose([
+            transforms.Resize(size = (IMG_SIZE, IMG_SIZE), interpolation = interpolation),
+            transforms.ToTensor(),
+            transforms.Normalize(data_mean, data_std)
+        ])
+        val_transform = transforms.Compose([
+            transforms.Resize(size = (IMG_SIZE, IMG_SIZE), interpolation = interpolation),
+            transforms.ToTensor(),
+            transforms.Normalize(data_mean, data_std)
+        ])
+    else:
+        train_transform = transforms.Compose([
+            transforms.Resize(size = (IMG_SIZE, IMG_SIZE), interpolation = interpolation),
+            transforms.ToTensor(),
+        ])
+        val_transform = transforms.Compose([
+            transforms.Resize(size = (IMG_SIZE, IMG_SIZE), interpolation = interpolation),
+            transforms.ToTensor()
+        ])
 
     # Create dataset objects
-    ds_train = ImageDataset(path_base = path_data, df = df_train, img_transform = train_transform)
-    ds_val   = ImageDataset(path_base = path_data, df = df_val, img_transform = val_transform)
-    ds_test  = ImageDataset(path_base = path_data, df = df_test, img_transform = val_transform)
+    ds_train = ImageDataset(path_base = path_data, df = df_train, img_transform = train_transform, postprocess = not USE_STD)
+    ds_val   = ImageDataset(path_base = path_data, df = df_val, img_transform = val_transform, postprocess = not USE_STD)
+    ds_test  = ImageDataset(path_base = path_data, df = df_test, img_transform = val_transform, postprocess = not USE_STD)
 
     # Create dataloaders
     dl_train = DataLoader(ds_train, batch_size = batch_size, shuffle = True)
@@ -131,7 +141,7 @@ if __name__ == "__main__":
     dl_test   = DataLoader(ds_test, batch_size = batch_size, shuffle = False)
 
     # Define model
-    model = VGG16(n_classes = n_classes, fc_dropout = 0.25)
+    model = VGG16(n_classes = n_classes, use_bn = USE_BN, fc_dropout = 0.25)
     model = model.to(DEVICE)
 
     # Loss
@@ -184,4 +194,6 @@ if __name__ == "__main__":
     df_test.to_csv(f"{path_data}/test/data.csv")
 
     # Save best model weights
-    torch.save(best_model_state, f"{path_wt}/{model.name}_metric{best_metric:.4f}_epoch{best_epoch}.pt")
+    str_bn = "bn" if USE_BN else "no_bn"
+    str_std = "std" if USE_STD else "no_std"
+    torch.save(best_model_state, f"{path_wt}/{model.name}_{str_bn}_{str_std}_metric{best_metric:.4f}_epoch{best_epoch}.pt")
