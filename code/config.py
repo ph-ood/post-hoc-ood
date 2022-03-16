@@ -22,7 +22,7 @@ N_CLASSES = {
     "mnist_35689" : 5,
 }
 
-USE_BN = False
+USE_BN = True
 USE_STD = False
 
 DATA_MEAN = {
@@ -59,7 +59,7 @@ LR = {
 
 EPOCHS = {
     "mnist" : 5,
-    "cifar10" : 5,
+    "cifar10" : 10,
     "mnist_01247" : 5,
     "mnist_35689" : 5,
 }
