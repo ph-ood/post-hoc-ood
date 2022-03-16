@@ -45,6 +45,7 @@ IMG_SIZE = 32
 
 BATCH_SIZE = {
     "mnist" : 128,
+    "fmnist" : 128,
     "cifar10" : 128,
     "mnist_01247" : 128,
     "mnist_35689" : 128,
@@ -52,6 +53,7 @@ BATCH_SIZE = {
 
 LR = {
     "mnist" : 1e-4,
+    "fmnist" : 1e-4,
     "cifar10" : 1e-4,
     "mnist_01247" : 1e-4,
     "mnist_35689" : 1e-4,
@@ -59,6 +61,7 @@ LR = {
 
 EPOCHS = {
     "mnist" : 5,
+    "fmnist" : 5,
     "cifar10" : 10,
     "mnist_01247" : 5,
     "mnist_35689" : 5,
