@@ -15,6 +15,10 @@ parser.add_argument("--dataset", "-d", help = "Dataset name", required = True)
 
 if __name__ == "__main__":
 
+    # Set seed, get device
+    utils.setSeed(SEED)
+    DEVICE = utils.getDevice()
+
     args = parser.parse_args()
     dname = args.dataset
     patch_size = PATCH_SIZE[dname]
