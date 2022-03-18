@@ -61,7 +61,7 @@ LR = {
 
 EPOCHS = {
     "mnist" : 5,
-    "fmnist" : 5,
+    "fmnist" : 10,
     "cifar10" : 10,
     "mnist_01247" : 5,
     "mnist_35689" : 5,

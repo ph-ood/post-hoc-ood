@@ -8,7 +8,8 @@ def softmaxScore(logits):
 
 def maxLogitScore(logits):
     # logits: [b, n_classes]
-    s, _ = torch.exp(logits.max(dim = -1)) # [b,]
+    mx, _ = logits.max(dim = -1) # [b,]
+    s = mx #torch.exp(mx)
     return s
 
 def energyScore(logits, T = 1):

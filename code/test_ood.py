@@ -27,6 +27,8 @@ def score(logits, sname):
     # logits: [b, n_classes]
     if sname == "softmax":
         s = sc.softmaxScore(logits) # [b,]
+    elif sname == "maxlogit":
+        s = sc.maxLogitScore(logits) # [b,]
     elif sname == "energy":
         T = 1
         s = sc.energyScore(logits, T) # [b,]
