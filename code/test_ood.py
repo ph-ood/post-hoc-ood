@@ -13,7 +13,7 @@ from torchvision import transforms
 from torch.nn import functional as F
 from torch.utils.data import DataLoader
 
-# Usage: python3 test_ood.py -i cifar10 -o mnist -s softmax -n vgg16 -m 0.6759 -e 2
+# Usage: python3 test_ood.py -n vgg16 -m 0.9911 -e 5 -i mnist -o fmnist -s energy
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--id", "-i", help = "In-Distribution dataset name", required = True)
