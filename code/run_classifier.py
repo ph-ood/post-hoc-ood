@@ -115,21 +115,40 @@ if __name__ == "__main__":
     # Define transforms
     interpolation = transforms.functional.InterpolationMode.BILINEAR
     if USE_STD:
-        train_transform = transforms.Compose([
-            transforms.Resize(size = (IMG_SIZE, IMG_SIZE), interpolation = interpolation),
-            transforms.ToTensor(),
-            transforms.Normalize(data_mean, data_std)
-        ])
+        if dname == "cifar10":
+            train_transform = transforms.Compose([
+                transforms.Resize(size = (IMG_SIZE, IMG_SIZE), interpolation = interpolation),
+                transforms.RandomHorizontalFlip(),
+                transforms.RandomPerspective(),
+                transforms.RandomAffine(degrees = 10, translate = (0.05, 0.15), scale = (0.8, 1.2)),
+                transforms.ToTensor(),
+                transforms.Normalize(data_mean, data_std)
+            ])
+        else:
+            train_transform = transforms.Compose([
+                transforms.Resize(size = (IMG_SIZE, IMG_SIZE), interpolation = interpolation),
+                transforms.ToTensor(),
+                transforms.Normalize(data_mean, data_std)
+            ])
         val_transform = transforms.Compose([
             transforms.Resize(size = (IMG_SIZE, IMG_SIZE), interpolation = interpolation),
             transforms.ToTensor(),
             transforms.Normalize(data_mean, data_std)
         ])
     else:
-        train_transform = transforms.Compose([
-            transforms.Resize(size = (IMG_SIZE, IMG_SIZE), interpolation = interpolation),
-            transforms.ToTensor(),
-        ])
+        if dname == "cifar10":
+            train_transform = transforms.Compose([
+                transforms.Resize(size = (IMG_SIZE, IMG_SIZE), interpolation = interpolation),
+                transforms.RandomHorizontalFlip(),
+                transforms.RandomPerspective(),
+                transforms.RandomAffine(degrees = 10, translate = (0.05, 0.15), scale = (0.8, 1.2)),
+                transforms.ToTensor()
+            ])
+        else:
+            train_transform = transforms.Compose([
+                transforms.Resize(size = (IMG_SIZE, IMG_SIZE), interpolation = interpolation),
+                transforms.ToTensor(),
+            ])
         val_transform = transforms.Compose([
             transforms.Resize(size = (IMG_SIZE, IMG_SIZE), interpolation = interpolation),
             transforms.ToTensor()
