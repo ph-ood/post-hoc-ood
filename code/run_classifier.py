@@ -1,6 +1,6 @@
-import sys
 import utils
 import torch
+import argparse
 import numpy as np
 import pandas as pd
 from torch import nn
@@ -14,6 +14,9 @@ from dataset import ImageDataset
 from torchvision import transforms
 from torch.utils.data import DataLoader
 from sklearn.model_selection import train_test_split
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--dataset", "-d", help = "Dataset name", required = True)
 
 def train(model, loader, optimizer, criterion):
     
@@ -79,7 +82,9 @@ if __name__ == "__main__":
     utils.setSeed(SEED)
     DEVICE = utils.getDevice()
 
-    dname = sys.argv[1]
+    # Get args
+    args = parser.parse_args()
+    dname = args.dataset
 
     # Get config for data
     path_data = f"{PATH_DATA}/{dname}"
