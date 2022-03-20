@@ -45,3 +45,18 @@ class HarmonicEnergyLoss(nn.Module):
         loss = loss_discr + self.alpha*loss_energy.mean()
 
         return loss
+
+
+class BrierScore(nn.Module):
+
+    def __init__(self, n_classes):
+        super(BrierScore, self).__init__()
+        self.softmax = nn.Softmax(dim = -1)
+        self.n_classes = n_classes
+
+    def forward(self, logits, labels):
+        # logits: [b, n_classes], labels: [b,]
+        probs = self.softmax(logits)
+        ohes = F.one_hot(labels, num_classes = self.n_classes)
+        loss = ((probs - ohes)**2).mean()
+        return loss

@@ -43,6 +43,14 @@ DATA_STD = {
 
 IMG_SIZE = 32
 
+LOSS = {
+    "mnist" : "bs",
+    "fmnist" : "bs",
+    "cifar10" : "cce",
+    "mnist_01247" : "cce",
+    "mnist_35689" : "cce",
+}
+
 BATCH_SIZE = {
     "mnist" : 128,
     "fmnist" : 128,
@@ -62,7 +70,7 @@ LR = {
 EPOCHS = {
     "mnist" : 5,
     "fmnist" : 10,
-    "cifar10" : 10,
+    "cifar10" : 50,
     "mnist_01247" : 5,
     "mnist_35689" : 5,
 }
@@ -74,3 +82,5 @@ PATCH_SIZE = {
     "mnist_01247" : 14,
     "mnist_35689" : 14,
 }
+
+# 0.9896, 0.9239

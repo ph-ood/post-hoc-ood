@@ -83,9 +83,12 @@ if __name__ == "__main__":
     batch_size = BATCH_SIZE[dname_i]
     path_wt = f"{PATH_WT}/{dname_i}"
 
+    loss_name = LOSS[dname_i]
+
     str_bn = "bn" if USE_BN else "no_bn"
     str_std = "std" if USE_STD else "no_std"
-    path_model_wt = f"{path_wt}/{model_name}_{str_bn}_{str_std}_metric{model_metric:.4f}_epoch{model_epoch}.pt"
+    loss_prefix = "" if loss_name == "ce" else f"{loss_name}_"
+    path_model_wt = f"{path_wt}/{model_name}_{str_bn}_{str_std}_{loss_prefix}metric{model_metric:.4f}_epoch{model_epoch}.pt"
 
     # Load csv file
     df_i = pd.read_csv(f"{path_data_i}/data.csv")
@@ -142,5 +145,5 @@ if __name__ == "__main__":
     scores_o = computeScores(model, dl_o, sname)
 
     # Save scores
-    np.save(f"{PATH_RES}/raw/{str_bn}_{str_std}_{dname_i}_{dname_o}_{sname}_id.npy", np.array(scores_i))
-    np.save(f"{PATH_RES}/raw/{str_bn}_{str_std}_{dname_i}_{dname_o}_{sname}_ood.npy", np.array(scores_o))
+    np.save(f"{PATH_RES}/raw/{str_bn}_{str_std}_{loss_prefix}{dname_i}_{dname_o}_{sname}_id.npy", np.array(scores_i))
+    np.save(f"{PATH_RES}/raw/{str_bn}_{str_std}_{loss_prefix}{dname_i}_{dname_o}_{sname}_ood.npy", np.array(scores_o))

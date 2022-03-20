@@ -9,6 +9,7 @@ from tqdm import tqdm
 from torch import optim
 from pathlib import Path
 from copy import deepcopy
+from losses import BrierScore
 from models.vgg16 import VGG16
 from dataset import ImageDataset
 from torchvision import transforms
@@ -95,6 +96,7 @@ if __name__ == "__main__":
     lr = LR[dname]
     n_classes = N_CLASSES[dname]
     n_epochs = EPOCHS[dname] 
+    loss_name = LOSS[dname]
 
     # Create dir if doesn't exist
     Path(path_wt).mkdir(parents = True, exist_ok = True)
@@ -169,7 +171,7 @@ if __name__ == "__main__":
     model = model.to(DEVICE)
 
     # Loss
-    criterion = nn.CrossEntropyLoss() # assumes n_classes > 2 for all data used
+    criterion = nn.CrossEntropyLoss() if loss_name == "ce" else BrierScore(n_classes)
     criterion = criterion.to(DEVICE)
 
     # Optimizer
@@ -220,4 +222,5 @@ if __name__ == "__main__":
     # Save best model weights
     str_bn = "bn" if USE_BN else "no_bn"
     str_std = "std" if USE_STD else "no_std"
-    torch.save(best_model_state, f"{path_wt}/{model.name}_{str_bn}_{str_std}_metric{best_metric:.4f}_epoch{best_epoch}.pt")
+    loss_prefix = "" if loss_name == "ce" else f"{loss_name}_"
+    torch.save(best_model_state, f"{path_wt}/{model.name}_{str_bn}_{str_std}_{loss_prefix}metric{best_metric:.4f}_epoch{best_epoch}.pt")
