@@ -22,8 +22,8 @@ def dirichletScore(logits, alpha):
     term1 = torch.lgamma(alpha.sum(dim = -1)) - (torch.lgamma(alpha)).sum(dim = -1)
     term2 = ((alpha - 1)*torch.log(smax)).sum(dim = -1) # [b,]
     logp = term1 + term2
-    p = torch.exp(logp)
-    return p
+    # p = torch.exp(logp)
+    return logp
 
 if __name__ == "__main__":
 

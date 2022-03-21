@@ -32,6 +32,11 @@ def score(logits, sname):
     elif sname == "energy":
         T = 1
         s = sc.energyScore(logits, T) # [b,]
+    elif sname == "dirichlet":
+        alpha = torch.tensor([0.0755, 0.0649, 0.0750, 0.0706, 0.0727, 0.0673, 0.0765, 0.0681, 0.0659, 0.0651]).to(DEVICE)
+        # fmnist [0.0755, 0.0649, 0.0750, 0.0706, 0.0727, 0.0673, 0.0765, 0.0681, 0.0659, 0.0651]
+        # mnist [0.0761, 0.0794, 0.0796, 0.0808, 0.0768, 0.0782, 0.0803, 0.0828, 0.0852, 0.0849]
+        s = sc.dirichletScore(logits, alpha)
     else:
         raise ValueError("Incorret score name")
     return s

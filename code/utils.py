@@ -95,6 +95,10 @@ def resize(img, size):
     res = np.around(255*res).astype(np.uint8)
     return res
 
+def freeze(model):
+    for p in model.parameters():
+        p.requires_grad = False
+
 # Metrics (ref. for ood metrics: https://github.com/tayden/ood-metrics)
 
 def AUROC(preds, labels):

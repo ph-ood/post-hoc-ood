@@ -44,11 +44,11 @@ DATA_STD = {
 IMG_SIZE = 32
 
 LOSS = {
-    "mnist" : "bs",
-    "fmnist" : "bs",
-    "cifar10" : "cce",
-    "mnist_01247" : "cce",
-    "mnist_35689" : "cce",
+    "mnist" : "ce",
+    "fmnist" : "ce",
+    "cifar10" : "ce",
+    "mnist_01247" : "ce",
+    "mnist_35689" : "ce",
 }
 
 BATCH_SIZE = {
