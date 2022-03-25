@@ -11,6 +11,7 @@ from models.vgg16 import VGG16
 from dataset import ImageDataset
 from torchvision import transforms
 from torch.nn import functional as F
+from models.dirichlet import Dirichlet
 from torch.utils.data import DataLoader
 
 # Usage: python3 test_ood.py -n vgg16 -m 0.9911 -e 5 -i mnist -o fmnist -s energy
@@ -23,9 +24,9 @@ parser.add_argument("--name", "-n", help = "Model name", required = True)
 parser.add_argument("--metric", "-m", help = "Model classification metric", required = True)
 parser.add_argument("--epoch", "-e", help = "Model epochs trained", required = True)
 
-def score(logits, sname):
+def score(logits, sname, **kwargs):
     # logits: [b, n_classes]
-    
+
     if sname == "softmax":
         s = sc.softmaxScore(logits) # [b,]
 
@@ -43,17 +44,18 @@ def score(logits, sname):
         s = sc.energyScore(logits, T) # [b,]
 
     elif sname == "dirichlet":
-        alpha = torch.tensor([0.0755, 0.0649, 0.0750, 0.0706, 0.0727, 0.0673, 0.0765, 0.0681, 0.0659, 0.0651]).to(DEVICE)
+        # alpha = torch.tensor([0.0755, 0.0649, 0.0750, 0.0706, 0.0727, 0.0673, 0.0765, 0.0681, 0.0659, 0.0651]).to(DEVICE)
         # fmnist [0.0755, 0.0649, 0.0750, 0.0706, 0.0727, 0.0673, 0.0765, 0.0681, 0.0659, 0.0651]
         # mnist [0.0761, 0.0794, 0.0796, 0.0808, 0.0768, 0.0782, 0.0803, 0.0828, 0.0852, 0.0849]
-        s = sc.dirichletScore(logits, alpha)
-    
+        # s = sc.dirichletScore(logits, alpha)
+        s = kwargs["dirichletScore"](logits)
+
     else:
         raise ValueError("Incorret score name")
 
     return s
 
-def computeScores(model, loader, sname):
+def computeScores(model, loader, sname, **kwargs):
     
     scores = []
     
@@ -66,7 +68,7 @@ def computeScores(model, loader, sname):
 
             logits = model(imgs) # [b, n_classes]
 
-            sb = score(logits, sname)
+            sb = score(logits, sname, **kwargs)
             scores += sb.detach().cpu().tolist()
 
     return scores
@@ -155,11 +157,18 @@ if __name__ == "__main__":
     model = model.to(DEVICE)
     model.eval()
 
+    kw = {}
+    if sname == "dirichlet":
+        alphas = torch.load(f"{path_wt}/alphas.pt")
+        drch = Dirichlet(n_classes = n_classes, alphas = alphas)
+        drch = drch.to(DEVICE)
+        kw["dirichletScore"] = drch.score
+
     # Test
     print("Computing In-Distribution Scores")
-    scores_i = computeScores(model, dl_i, sname)
+    scores_i = computeScores(model, dl_i, sname, **kw)
     print("Computing Out-Of-Distribution Scores")
-    scores_o = computeScores(model, dl_o, sname)
+    scores_o = computeScores(model, dl_o, sname, **kw)
 
     # Save scores
     np.save(f"{PATH_RES}/raw/{str_bn}_{str_std}_{loss_prefix}{dname_i}_{dname_o}_{sname}_id.npy", np.array(scores_i))

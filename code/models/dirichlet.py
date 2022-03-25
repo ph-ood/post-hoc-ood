@@ -3,18 +3,26 @@ from torch import nn
 
 class Dirichlet(nn.Module):
 
-    def __init__(self, n_classes, return_probs = False):
+    def __init__(self, n_classes, return_probs = False, alphas = None):
         super(Dirichlet, self).__init__()
-        self.alpha = torch.nn.Parameter(torch.ones(n_classes,)) # uniform over the simplex
         self.return_probs = return_probs
-        self.softmax = nn.Softmax(dim = -1)
+        self.lsoftmax = nn.LogSoftmax(dim = -1)
+        if alphas is not None:
+            self.alpha = alphas
+        else:
+            self.alpha = torch.nn.Parameter(torch.ones(n_classes,)) # uniform over the simplex
+
+    def score(self, logits):
+        lsmax = self.lsoftmax(logits) # [b, n_classes]
+        s = ((self.alpha - 1)*lsmax).sum(dim = -1) # [b,]
+        return s
 
     def forward(self, logits):
         # logits: [b, n_classes]
 
-        smax = self.softmax(logits) # [b, n_classes]
+        lsmax = self.lsoftmax(logits) # [b, n_classes]
         term1 = torch.lgamma(self.alpha.sum(dim = -1)) - (torch.lgamma(self.alpha)).sum(dim = -1)
-        term2 = ((self.alpha - 1)*torch.log(smax)).sum(dim = -1) # [b,]
+        term2 = ((self.alpha - 1)*lsmax).sum(dim = -1) # [b,]
         logp = term1 + term2 # [b,]
 
         if self.return_probs:

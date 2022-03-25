@@ -12,6 +12,7 @@ from dataset import ImageDataset
 from torchvision import transforms
 from models.dirichlet import Dirichlet
 from torch.utils.data import DataLoader
+from sklearn.model_selection import train_test_split
 
 # Usage: python3 train_dirichlet.py -n vgg16 -m 0.9911 -e 5 -d mnist
 
@@ -49,6 +50,27 @@ def train(model, drch, loader, optimizer):
     avg_epoch_loss = epoch_loss / n_batches 
     return avg_epoch_loss
 
+def validate(model, drch, loader):
+
+    epoch_loss = 0
+
+    drch.eval()
+    with torch.no_grad():
+        for imgs, labels in tqdm(loader):
+
+            imgs = imgs.to(DEVICE) # [b, h, w]
+
+            logits = model(imgs) # [b, n_classes]
+
+            loss_per_sample = drch(logits) # [b,]
+            loss = -1*loss_per_sample.mean() # negative log likelhood
+
+            epoch_loss += loss.detach().item()
+
+    n_batches = len(loader)
+    avg_epoch_loss = epoch_loss / n_batches 
+    return avg_epoch_loss
+
 if __name__ == "__main__":  
 
     # Set seed, get device
@@ -78,9 +100,11 @@ if __name__ == "__main__":
     # Load csv file
     df = pd.read_csv(f"{path_data}/data.csv")
 
-    # Train
-    df_train = df[df["split"] == "train"]
+    # Train and val
+    df_train_val = df[df["split"] == "train"]
+    df_train, df_val = train_test_split(df_train_val, test_size = 5000, shuffle = True, random_state = SEED)
     df_train.reset_index(inplace = True, drop = True)
+    df_val.reset_index(inplace = True, drop = True)
 
     # Define transforms
     interpolation = transforms.functional.InterpolationMode.BILINEAR
@@ -98,9 +122,11 @@ if __name__ == "__main__":
 
     # Create dataset objects
     ds_train  = ImageDataset(path_base = path_data, df = df_train, img_transform = transform, postprocess = not USE_STD)
+    ds_val  = ImageDataset(path_base = path_data, df = df_val, img_transform = transform, postprocess = not USE_STD)
 
     # Create dataloaders
     dl_train = DataLoader(ds_train, batch_size = batch_size, shuffle = True)
+    dl_val = DataLoader(ds_val, batch_size = batch_size, shuffle = False)
 
     # Define model
     model = VGG16(n_classes = n_classes, use_bn = USE_BN, fc_dropout = 0.25)
@@ -120,15 +146,28 @@ if __name__ == "__main__":
     )
 
     # Train
+    best_loss = float("inf")
+    best_epoch = 0
     print("Training Dirichlet")
-    
     for epoch in range(n_epochs):
 
         print(f"Epoch: {epoch+1:02}/{n_epochs:02}")
 
         train_loss = train(model, drch, dl_train, optimizer)
+        val_loss = validate(model, drch, dl_val)
+        if val_loss < best_loss:
+            best_loss = val_loss
+            best_alphas = drch.alpha.detach().clone()
+            best_epoch = epoch + 1
 
-        print(f"Train loss: {train_loss:.4f}")
+        print(f"Train loss: {train_loss:.4f} | Val. loss: {val_loss:.4f}")
         print("Alphas:")
         print(drch.alpha)
         print()
+
+    print(f"Best epoch: {best_epoch} | Best val. loss: {best_loss:.4f}")
+    print()
+    print("Best alphas:")
+    print(best_alphas.tolist())
+
+    torch.save(best_alphas, f"{path_wt}/alphas.pt")
