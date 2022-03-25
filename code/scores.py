@@ -12,6 +12,17 @@ def maxLogitScore(logits):
     s = mx #torch.exp(mx)
     return s
 
+def minLogitScore(logits):
+    # logits: [b, n_classes]
+    mx, _ = logits.min(dim = -1) # [b,]
+    s = -1*mx #torch.exp(mx)
+    return s
+
+def avgLogitScore(logits):
+    # logits: [b, n_classes]
+    s = -1*logits.mean(dim = -1) # [b,]
+    return s
+
 def energyScore(logits, T = 1):
     # logits: [b, n_classes]
     s = T*torch.logsumexp(logits / T, dim = -1)
