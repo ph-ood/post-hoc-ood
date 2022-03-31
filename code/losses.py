@@ -13,13 +13,16 @@ class DualMarginLoss(nn.Module):
         self.alpha = alpha
         self.criterion = nn.CrossEntropyLoss()
 
-    def forward(self, logits, labels, logits_ft):
+    def forward(self, logits, labels, logits_ft = None):
         
         loss_discr = self.criterion(logits, labels)
         
-        e_i = -sc.energyScore(logits, self.T) # [b,]
-        e_o = -sc.energyScore(logits_ft, self.T) # [b_ft,]
-        loss_energy = (F.relu(e_i - self.m_i)**2).mean() + (F.relu(self.m_o - e_o)**2).mean()
+        if logits_ft is None:
+            loss_energy = 0
+        else:
+            e_i = -sc.energyScore(logits, self.T) # [b,]
+            e_o = -sc.energyScore(logits_ft, self.T) # [b_ft,]
+            loss_energy = (F.relu(e_i - self.m_i)**2).mean() + (F.relu(self.m_o - e_o)**2).mean()
         
         loss = loss_discr + self.alpha*loss_energy
 

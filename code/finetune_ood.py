@@ -74,7 +74,7 @@ def validate(model, loader, criterion):
             output = model(imgs) # [b, n_classes]
             preds = output.argmax(dim = -1) # [b,]
 
-            loss = criterion(output, labels)
+            loss = criterion(output, labels, logits_ft = None)
             
             epoch_loss += loss.detach().item()
             y_true += labels.detach().cpu().tolist()
@@ -98,19 +98,19 @@ if __name__ == "__main__":
     model_metric = float(args.metric)
     model_epoch = args.epoch
 
-    # Get config for data
-
-    path_model_wt = f"{path_wt}/{model_name}_metric{model_metric:.4f}_epoch{model_epoch}.pt"
+    loss_name = LOSS[dname]
 
     path_data = f"{PATH_DATA}/{dname}"
     path_data_ft = f"{PATH_DATA}/{dname_ft}"
     path_wt = f"{PATH_WT}/{dname}"
 
-    data_mean = DATA_MEAN[dname]
-    data_std = DATA_STD[dname]
+    if USE_STD:
 
-    data_mean_ft = DATA_MEAN[dname_ft]
-    data_std_ft = DATA_STD[dname_ft]
+        data_mean = DATA_MEAN[dname]
+        data_std = DATA_STD[dname]
+
+        data_mean_ft = DATA_MEAN[dname_ft]
+        data_std_ft = DATA_STD[dname_ft]
 
     batch_size = BATCH_SIZE[dname]
     batch_size_ft = BATCH_SIZE[dname_ft]
@@ -118,6 +118,13 @@ if __name__ == "__main__":
     lr = LR[dname]
     n_classes = N_CLASSES[dname]
     n_epochs = EPOCHS[dname] 
+
+    # Get config for data
+    str_bn = "bn" if USE_BN else "no_bn"
+    str_std = "std" if USE_STD else "no_std"
+    loss_prefix = "" if loss_name == "ce" else f"{loss_name}_"
+
+    path_model_wt = f"{path_wt}/{model_name}_{str_bn}_{str_std}_{loss_prefix}metric{model_metric:.4f}_epoch{model_epoch}.pt"
 
     # Load csv file
     df = pd.read_csv(f"{path_data}/data.csv")
@@ -136,28 +143,70 @@ if __name__ == "__main__":
     df_ft = pd.read_csv(f"{path_data_ft}/data.csv")
 
     # Define transforms
+    # Define transforms
     interpolation = transforms.functional.InterpolationMode.BILINEAR
-    train_transform = transforms.Compose([
-        transforms.Resize(size = (IMG_SIZE, IMG_SIZE), interpolation = interpolation),
-        transforms.ToTensor(),
-        transforms.Normalize(data_mean, data_std)
-    ])
-    val_transform = transforms.Compose([
-        transforms.Resize(size = (IMG_SIZE, IMG_SIZE), interpolation = interpolation),
-        transforms.ToTensor(),
-        transforms.Normalize(data_mean, data_std)
-    ])
-    ft_transform = transforms.Compose([
-        transforms.Resize(size = (IMG_SIZE, IMG_SIZE), interpolation = interpolation),
-        transforms.ToTensor(),
-        transforms.Normalize(data_mean_ft, data_std_ft)
-    ])
+
+    if USE_STD:
+
+        if dname == "cifar10":
+            train_transform = transforms.Compose([
+                transforms.Resize(size = (IMG_SIZE, IMG_SIZE), interpolation = interpolation),
+                transforms.RandomHorizontalFlip(),
+                transforms.RandomPerspective(),
+                transforms.RandomAffine(degrees = 10, translate = (0.05, 0.15), scale = (0.8, 1.2)),
+                transforms.ToTensor(),
+                transforms.Normalize(data_mean, data_std)
+            ])
+        else:
+            train_transform = transforms.Compose([
+                transforms.Resize(size = (IMG_SIZE, IMG_SIZE), interpolation = interpolation),
+                transforms.ToTensor(),
+                transforms.Normalize(data_mean, data_std)
+            ])
+
+        val_transform = transforms.Compose([
+            transforms.Resize(size = (IMG_SIZE, IMG_SIZE), interpolation = interpolation),
+            transforms.ToTensor(),
+            transforms.Normalize(data_mean, data_std)
+        ])
+
+        ft_transform = transforms.Compose([
+            transforms.Resize(size = (IMG_SIZE, IMG_SIZE), interpolation = interpolation),
+            transforms.ToTensor(),
+            transforms.Normalize(data_mean_ft, data_std_ft)
+        ])
+    else:
+
+        if dname == "cifar10":
+            train_transform = transforms.Compose([
+                transforms.Resize(size = (IMG_SIZE, IMG_SIZE), interpolation = interpolation),
+                transforms.RandomHorizontalFlip(),
+                transforms.RandomPerspective(),
+                transforms.RandomAffine(degrees = 10, translate = (0.05, 0.15), scale = (0.8, 1.2)),
+                transforms.ToTensor()
+            ])
+        else:
+            train_transform = transforms.Compose([
+                transforms.Resize(size = (IMG_SIZE, IMG_SIZE), interpolation = interpolation),
+                transforms.ToTensor(),
+            ])
+
+        val_transform = transforms.Compose([
+            transforms.Resize(size = (IMG_SIZE, IMG_SIZE), interpolation = interpolation),
+            transforms.ToTensor()
+        ])
+
+        ft_transform = transforms.Compose([
+            transforms.Resize(size = (IMG_SIZE, IMG_SIZE), interpolation = interpolation),
+            transforms.ToTensor(),
+        ])
 
     # Create dataset objects
-    ds_train = ImageDataset(path_base = path_data, df = df_train, img_transform = train_transform)
-    ds_val   = ImageDataset(path_base = path_data, df = df_val, img_transform = val_transform)
-    ds_test  = ImageDataset(path_base = path_data, df = df_test, img_transform = val_transform)
-    ds_ft    = ImageDataset(path_base = path_data_ft, df = df_ft, img_transform = ft_transform, labelled = False)
+     # Create dataset objects
+    ds_train = ImageDataset(path_base = path_data, df = df_train, img_transform = train_transform, postprocess = not USE_STD)
+    ds_val   = ImageDataset(path_base = path_data, df = df_val, img_transform = val_transform, postprocess = not USE_STD)
+    ds_test  = ImageDataset(path_base = path_data, df = df_test, img_transform = val_transform, postprocess = not USE_STD)
+    ds_ft    = ImageDataset(path_base = path_data_ft, df = df_ft, img_transform = ft_transform, labelled = False, postprocess = not USE_STD)
 
     # Create dataloaders
     dl_train = DataLoader(ds_train, batch_size = batch_size, shuffle = True)
@@ -166,15 +215,13 @@ if __name__ == "__main__":
     dl_ft   = DataLoader(ds_ft, batch_size = batch_size_ft, shuffle = True)
 
     # Define model
-    model = VGG16(n_classes = n_classes, fc_dropout = 0.25)
+    model = VGG16(n_classes = n_classes, use_bn = USE_BN, fc_dropout = 0.25)
     model.load_state_dict(torch.load(path_model_wt))
     model = model.to(DEVICE)
 
     # Losses
-    criterion = nn.CrossEntropyLoss() # assumes n_classes > 2 for all data used
+    criterion = DualMarginLoss(T = 1, m_i = 1, m_o = 1, alpha = 0.1)
     criterion = criterion.to(DEVICE)
-    criterion_ft = DualMarginLoss(t = 1, m_i = 1, m_o = 1, alpha = 0.1)
-    criterion_ft = criterion_ft.to(DEVICE)
 
     # Optimizer
     optimizer = optim.Adam(
@@ -190,13 +237,13 @@ if __name__ == "__main__":
        
         print(f"Epoch: {epoch+1:02}/{n_epochs:02}")
 
-        train_loss, train_true, train_preds = train(model, dl_train, dl_ft, optimizer, criterion_ft)
+        train_loss, train_true, train_preds = train(model, dl_train, dl_ft, optimizer, criterion)
         val_loss, val_true, val_preds = validate(model, dl_val, criterion)
         
         train_metrics = utils.computeMetrics(train_true, train_preds)
         val_metrics = utils.computeMetrics(val_true, val_preds)
 
-        if val_metrics["f1"] > best_metric:
+        if val_metrics["f1"] > best_metric and (epoch + 1) >= 5:
             best_epoch = epoch + 1
             best_metric = val_metrics["f1"]
             best_model_state = deepcopy(model.state_dict())
@@ -222,4 +269,4 @@ if __name__ == "__main__":
     df_test.to_csv(f"{path_data}/test/data.csv")
 
     # Save best model weights
-    torch.save(best_model_state, f"{path_wt}/ft_{model.name}_metric{best_metric:.4f}_epoch{n_epochs}.pt")
+    torch.save(best_model_state, f"{path_wt}/ft_{model_name}_{str_bn}_{str_std}_{loss_prefix}metric{best_metric:.4f}_epoch{best_epoch}.pt")
