@@ -90,6 +90,13 @@ def normalize255(x):
     y = np.uint8(y)
     return y
 
+def float2uint(x):
+    x = np.around(x)
+    x = np.maximum(x, 0)
+    x = np.minimum(x, 255)
+    x = np.uint8(x)
+    return x
+
 def resize(img, size):
     res = transform.resize(img, (size, size))
     res = np.around(255*res).astype(np.uint8)
