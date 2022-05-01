@@ -10,14 +10,17 @@ from torch import optim
 from copy import deepcopy
 from models.vgg16 import VGG16
 from dataset import ImageDataset
-from losses import DualMarginLoss
 from torchvision import transforms
 from torch.utils.data import DataLoader
+from losses import DualMarginLoss, DirichletLoss
 from sklearn.model_selection import train_test_split
+
+# python3 finetune_ood.py -i fmnist -f fmnist_patched -l dirichlet -n vgg16 -m 0.9270 -e 10
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--id", "-i", help = "In-Distribution dataset name", required = True)
 parser.add_argument("--ft", "-f", help = "Finetuning dataset name", required = True)
+parser.add_argument("--loss", "-l", help = "Finetuning loss used", required = True)
 parser.add_argument("--name", "-n", help = "Model name", required = True)
 parser.add_argument("--metric", "-m", help = "Model classification metric", required = True)
 parser.add_argument("--epoch", "-e", help = "Model epochs trained", required = True)
@@ -94,6 +97,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     dname = args.id # in-distr. data
     dname_ft = args.ft # ood data
+    loss_ft = args.loss
     model_name = args.name
     model_metric = float(args.metric)
     model_epoch = args.epoch
@@ -220,7 +224,12 @@ if __name__ == "__main__":
     model = model.to(DEVICE)
 
     # Losses
-    criterion = DualMarginLoss(T = 1, m_i = 1, m_o = 1, alpha = 0.1)
+    if loss_ft == "dml":
+        criterion = DualMarginLoss(T = 1, m_i = 1, m_o = 1, alpha = 0.1)
+    elif loss_ft == "dirichlet":
+        criterion = DirichletLoss(n_classes = n_classes, path_wt = path_wt, beta = 0.1, device = DEVICE)
+    else:
+        raise ValueError("Invalid finetuning loss")
     criterion = criterion.to(DEVICE)
 
     # Optimizer

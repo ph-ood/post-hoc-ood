@@ -28,6 +28,7 @@ class DualMarginLoss(nn.Module):
 
         return loss
 
+
 class DirichletLoss(nn.Module):
 
     def __init__(self, n_classes, path_wt, beta, device):
