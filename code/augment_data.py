@@ -1,4 +1,5 @@
 import utils
+import shutil
 import argparse
 import numpy as np
 import pandas as pd
@@ -9,6 +10,8 @@ from dataset import ImageDataset
 from torchvision import transforms
 from augmentations import ShufflePatch
 from torch.utils.data import DataLoader
+
+# python3 augment_data.py -d fmnist
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--dataset", "-d", help = "Dataset name", required = True)
@@ -53,3 +56,6 @@ if __name__ == "__main__":
             shuf_i = shuf[i, ...]
             path = paths[i]
             utils.save(shuf_i, f"{path_out}/{path}")
+
+    # Copy the CSV
+    shutil.copy(f"{PATH_DATA}/data.csv", f"{path_out}/data.csv")

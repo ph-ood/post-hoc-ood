@@ -84,7 +84,7 @@ EPOCHS = {
 
 PATCH_SIZE = {
     "mnist" : 14,
-    "fmnist" : 14,
+    "fmnist" : 7,
     "cifar10" : 16,
     "mnist_01247" : 14,
     "mnist_35689" : 14
