@@ -17,6 +17,7 @@ CLASSES = {
 N_CLASSES = {
     "mnist" : 10,
     "fmnist" : 10,
+    "fmnist_patched" : 10,
     "cifar10" : 10,
     "mnist_01247" : 5,
     "mnist_35689" : 5,
@@ -29,6 +30,7 @@ USE_STD = False
 DATA_MEAN = {
     "mnist" : [0.1309, 0.1309, 0.1309],
     "fmnist" : [0.2856, 0.2856, 0.2856],
+    "fmnist_patched" : [0.2856, 0.2856, 0.2856],
     "cifar10" : [0.4914, 0.4822, 0.4465],
     "mnist_01247" : [0.1256, 0.1256, 0.1256],
     "mnist_35689": [0.1365, 0.1365, 0.1365],
@@ -38,6 +40,7 @@ DATA_MEAN = {
 DATA_STD = {
     "mnist" : [0.2893, 0.2893, 0.2893],
     "fmnist" : [0.3385, 0.3385, 0.3385],
+    "fmnist_patched" : [0.3385, 0.3385, 0.3385],
     "cifar10" : [0.2470, 0.2435, 0.2616],
     "mnist_01247" : [0.2859, 0.2859, 0.2859],
     "mnist_35689" : [0.2927, 0.2927, 0.2927],
@@ -49,6 +52,7 @@ IMG_SIZE = 32
 LOSS = {
     "mnist" : "ce",
     "fmnist" : "ce",
+    "fmnist_patched" : "ce",
     "cifar10" : "ce",
     "mnist_01247" : "ce",
     "mnist_35689" : "ce",
@@ -58,6 +62,7 @@ LOSS = {
 BATCH_SIZE = {
     "mnist" : 128,
     "fmnist" : 128,
+    "fmnist_patched" : 128,
     "cifar10" : 128,
     "mnist_01247" : 128,
     "mnist_35689" : 128,
@@ -67,6 +72,7 @@ BATCH_SIZE = {
 LR = {
     "mnist" : 1e-4,
     "fmnist" : 1e-4,
+    "fmnist_patched" : 1e-4,
     "cifar10" : 1e-4,
     "mnist_01247" : 1e-4,
     "mnist_35689" : 1e-4,
@@ -76,6 +82,7 @@ LR = {
 EPOCHS = {
     "mnist" : 5,
     "fmnist" : 10,
+    "fmnist_patched" : 10,
     "cifar10" : 50,
     "mnist_01247" : 5,
     "mnist_35689" : 5,

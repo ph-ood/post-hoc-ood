@@ -50,7 +50,7 @@ class DirichletLoss(nn.Module):
         if logits_ft is None:
             loss_ft = 0
         else:
-            loss_ft = self.score(logits_ft) - self.score(logits)
+            loss_ft = self.score(logits) - self.score(logits_ft)
                         
         loss = loss_discr + self.beta*loss_ft
 
