@@ -28,6 +28,34 @@ class DualMarginLoss(nn.Module):
 
         return loss
 
+class DirichletLoss(nn.Module):
+
+    def __init__(self, n_classes, path_wt, beta, device):
+        super(DirichletLoss, self).__init__()
+        self.beta = beta
+        self.alphas = torch.load(f"{path_wt}/alphas.pt").to(device)
+        self.criterion = nn.CrossEntropyLoss()
+        self.lsoftmax = nn.LogSoftmax(dim = -1)
+
+    def score(self, logits):
+        lsmax = self.lsoftmax(logits).mean(dim = 0) # [n_classes,]
+        s = ((self.alphas - 1)*lsmax).mean(dim = 0) # scalar
+        return s
+
+    def forward(self, logits, labels, logits_ft = None):
+        
+        loss_discr = self.criterion(logits, labels)
+
+        if logits_ft is None:
+            loss_ft = 0
+        else:
+            loss_ft = self.score(logits_ft) - self.score(logits)
+                        
+        loss = loss_discr + self.beta*loss_ft
+
+        return loss
+
+
 class HarmonicEnergyLoss(nn.Module):
 
     def __init__(self, T, m_i, m_o, alpha):
