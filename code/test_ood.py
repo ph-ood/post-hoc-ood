@@ -50,6 +50,11 @@ def score(logits, sname, **kwargs):
         # s = sc.dirichletScore(logits, alpha)
         s = kwargs["dirichletScore"](logits)
 
+    elif sname == "ensemble":
+        s_d = kwargs["dirichletScore"](logits) # takes care of energy and avg_logit, and energy ~ max_logit
+        s_m = sc.minLogitScore(logits)
+        s = s_d + n_classes*s_m # n_classes is just a scaling weight defined in main
+
     else:
         raise ValueError("Incorret score name")
 
@@ -158,7 +163,7 @@ if __name__ == "__main__":
     model.eval()
 
     kw = {}
-    if sname == "dirichlet":
+    if sname in ["dirichlet", "ensemble"]:
         alphas = torch.load(f"{path_wt}/alphas.pt")
         drch = Dirichlet(n_classes = n_classes, alphas = alphas)
         drch = drch.to(DEVICE)
