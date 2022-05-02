@@ -11,7 +11,8 @@ SPLITS = ["train", "test"]
 CLASSES = {
     "mnist" : ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
     "fmnist" : ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
-    "cifar10" : ["airplane", "automobile", "bird", "cat", "deer", "dog", "frog", "horse", "ship", "truck"]
+    "cifar10" : ["airplane", "automobile", "bird", "cat", "deer", "dog", "frog", "horse", "ship", "truck"],
+    "mnist_35689" : ["3", "5", "6", "8", "9"]
 }
 
 N_CLASSES = {
@@ -22,6 +23,7 @@ N_CLASSES = {
     "cifar10_patched" : 10,
     "mnist_01247" : 5,
     "mnist_35689" : 5,
+    "mnist_35689_patched" : 5,
     "mnist_patched" : 10
 }
 
@@ -36,6 +38,7 @@ DATA_MEAN = {
     "cifar10_patched" : [0.4914, 0.4822, 0.4465],
     "mnist_01247" : [0.1256, 0.1256, 0.1256],
     "mnist_35689": [0.1365, 0.1365, 0.1365],
+    "mnist_35689_patched" : [0.1365, 0.1365, 0.1365],
     "mnist_patched" : [0.1309, 0.1309, 0.1309]
 }
 
@@ -47,6 +50,7 @@ DATA_STD = {
     "cifar10_patched" : [0.2470, 0.2435, 0.2616],
     "mnist_01247" : [0.2859, 0.2859, 0.2859],
     "mnist_35689" : [0.2927, 0.2927, 0.2927],
+    "mnist_35689_patched" : [0.2927, 0.2927, 0.2927],
     "mnist_patched" : [0.2893, 0.2893, 0.2893]
 }
 
@@ -60,6 +64,7 @@ LOSS = {
     "cifar10_patched" : "ce",
     "mnist_01247" : "ce",
     "mnist_35689" : "ce",
+    "mnist_35689_patched" : "ce",
     "mnist_patched" : "ce"
 }
 
@@ -71,6 +76,7 @@ BATCH_SIZE = {
     "cifar10_patched" : 128,
     "mnist_01247" : 128,
     "mnist_35689" : 128,
+    "mnist_35689_patched" : 128,
     "mnist_patched" : 128
 }
 
@@ -82,6 +88,7 @@ LR = {
     "cifar10_patched" : 1e-4,
     "mnist_01247" : 1e-4,
     "mnist_35689" : 1e-4,
+    "mnist_35689_patched" : 1e-4,
     "mnist_patched" : 1e-4
 }
 
@@ -93,15 +100,16 @@ EPOCHS = {
     "cifar10_patched" : 50,
     "mnist_01247" : 5,
     "mnist_35689" : 5,
+    "mnist_35689_patched" : 5,
     "mnist_patched" : 5,
 }
 
 PATCH_SIZE = {
-    "mnist" : 14,
+    "mnist" : 7,
     "fmnist" : 7,
     "cifar10" : 8,
-    "mnist_01247" : 14,
-    "mnist_35689" : 14
+    "mnist_01247" : 7,
+    "mnist_35689" : 7
 }
 
 EPOCHS_FT = {
@@ -112,5 +120,6 @@ EPOCHS_FT = {
     "cifar10_patched" : 10,
     "mnist_01247" : 5,
     "mnist_35689" : 5,
+    "mnist_35689_patched" : 5,
     "mnist_patched" : 5,
 }
