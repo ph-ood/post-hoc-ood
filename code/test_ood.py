@@ -23,6 +23,7 @@ parser.add_argument("--score", "-s", help = "softmax/energy", required = True)
 parser.add_argument("--name", "-n", help = "Model name", required = True)
 parser.add_argument("--metric", "-m", help = "Model classification metric", required = True)
 parser.add_argument("--epoch", "-e", help = "Model epochs trained", required = True)
+parser.add_argument("--loss_ft", "-l", help = "Finetuning loss used", required = False)
 
 def score(logits, sname, **kwargs):
     # logits: [b, n_classes]
@@ -44,10 +45,6 @@ def score(logits, sname, **kwargs):
         s = sc.energyScore(logits, T) # [b,]
 
     elif sname == "dirichlet":
-        # alpha = torch.tensor([0.0755, 0.0649, 0.0750, 0.0706, 0.0727, 0.0673, 0.0765, 0.0681, 0.0659, 0.0651]).to(DEVICE)
-        # fmnist [0.0755, 0.0649, 0.0750, 0.0706, 0.0727, 0.0673, 0.0765, 0.0681, 0.0659, 0.0651]
-        # mnist [0.0761, 0.0794, 0.0796, 0.0808, 0.0768, 0.0782, 0.0803, 0.0828, 0.0852, 0.0849]
-        # s = sc.dirichletScore(logits, alpha)
         s = kwargs["dirichletScore"](logits)
 
     elif sname == "ensemble":
@@ -92,6 +89,8 @@ if __name__ == "__main__":
     model_name = args.name
     model_metric = float(args.metric)
     model_epoch = args.epoch
+    model_loss_ft = args.loss_ft
+    is_ft = model_loss_ft != None
 
     # Get config for datas
     path_data_i = f"{PATH_DATA}/{dname_i}"
@@ -112,7 +111,11 @@ if __name__ == "__main__":
     str_bn = "bn" if USE_BN else "no_bn"
     str_std = "std" if USE_STD else "no_std"
     loss_prefix = "" if loss_name == "ce" else f"{loss_name}_"
-    path_model_wt = f"{path_wt}/{model_name}_{str_bn}_{str_std}_{loss_prefix}metric{model_metric:.4f}_epoch{model_epoch}.pt"
+
+    if model_loss_ft != None:
+        path_model_wt = f"{path_wt}/ft_{model_name}_{str_bn}_{str_std}_{model_loss_ft}_{loss_prefix}metric{model_metric:.4f}_epoch{model_epoch}.pt"
+    else:
+        path_model_wt = f"{path_wt}/{model_name}_{str_bn}_{str_std}_{loss_prefix}metric{model_metric:.4f}_epoch{model_epoch}.pt"
 
     # Load csv file
     df_i = pd.read_csv(f"{path_data_i}/data.csv")
@@ -176,5 +179,6 @@ if __name__ == "__main__":
     scores_o = computeScores(model, dl_o, sname, **kw)
 
     # Save scores
-    np.save(f"{PATH_RES}/raw/{str_bn}_{str_std}_{loss_prefix}{dname_i}_{dname_o}_{sname}_id.npy", np.array(scores_i))
-    np.save(f"{PATH_RES}/raw/{str_bn}_{str_std}_{loss_prefix}{dname_i}_{dname_o}_{sname}_ood.npy", np.array(scores_o))
+    str_ft = f"ft_{model_loss_ft}_" if is_ft else ""
+    np.save(f"{PATH_RES}/raw/{str_ft}{str_bn}_{str_std}_{loss_prefix}{dname_i}_{dname_o}_{sname}_id.npy", np.array(scores_i))
+    np.save(f"{PATH_RES}/raw/{str_ft}{str_bn}_{str_std}_{loss_prefix}{dname_i}_{dname_o}_{sname}_ood.npy", np.array(scores_o))
