@@ -121,7 +121,7 @@ if __name__ == "__main__":
 
     lr = LR[dname]
     n_classes = N_CLASSES[dname]
-    n_epochs = EPOCHS[dname] 
+    n_epochs = EPOCHS_FT[dname] 
 
     # Get config for data
     str_bn = "bn" if USE_BN else "no_bn"

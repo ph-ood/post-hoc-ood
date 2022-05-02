@@ -58,4 +58,4 @@ if __name__ == "__main__":
             utils.save(shuf_i, f"{path_out}/{path}")
 
     # Copy the CSV
-    shutil.copy(f"{PATH_DATA}/data.csv", f"{path_out}/data.csv")
+    shutil.copy(f"{PATH_DATA}/{dname}/data.csv", f"{path_out}/data.csv")
