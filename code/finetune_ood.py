@@ -227,7 +227,7 @@ if __name__ == "__main__":
     if loss_ft == "dml":
         criterion = DualMarginLoss(T = 1, m_i = 1, m_o = 1, alpha = 0.1)
     elif loss_ft == "dirichlet":
-        criterion = DirichletLoss(n_classes = n_classes, path_wt = path_wt, beta = 0.1, device = DEVICE)
+        criterion = DirichletLoss(n_classes = n_classes, path_wt = path_wt, beta = 0.001, device = DEVICE)
     else:
         raise ValueError("Invalid finetuning loss")
     criterion = criterion.to(DEVICE)
@@ -278,4 +278,4 @@ if __name__ == "__main__":
     df_test.to_csv(f"{path_data}/test/data.csv")
 
     # Save best model weights
-    torch.save(best_model_state, f"{path_wt}/ft_{model_name}_{str_bn}_{str_std}_{loss_prefix}metric{best_metric:.4f}_epoch{best_epoch}.pt")
+    torch.save(best_model_state, f"{path_wt}/ft_{model_name}_{str_bn}_{str_std}_{loss_ft}_{loss_prefix}metric{best_metric:.4f}_epoch{best_epoch}.pt")
