@@ -39,13 +39,15 @@ class HarmonicEnergyLoss(nn.Module):
     def forward(self, logits, labels, logits_ft):
         
         loss_discr = self.criterion(logits, labels)
-        
-        e_i = sc.energyScore(logits, self.T) # [b,]
-        e_o = sc.energyScore(logits_ft, self.T) # [b_ft,]
-        
-        loss_energy = -(2*e_o)/(1 + e_o*e_i)
+        if logits_ft is None:
+            loss_energy = 0
+        else:
+            e_i = -sc.energyScore(logits, self.T) # [b,]
+            e_o = -sc.energyScore(logits_ft, self.T) # [b_ft,]
+            
+            loss_energy = -(2*e_o.mean())/(1 + e_o.mean()*e_i.mean())
 
-        loss = loss_discr + self.alpha*loss_energy.mean()
+        loss = loss_discr + self.alpha*loss_energy
 
         return loss
 
@@ -62,4 +64,43 @@ class BrierScore(nn.Module):
         probs = self.softmax(logits)
         ohes = F.one_hot(labels, num_classes = self.n_classes)
         loss = ((probs - ohes)**2).mean()
+        return loss
+
+
+class MCELoss(nn.Module):
+    def __init__(self, T, alpha):
+        super(MCELoss, self).__init__()
+        self.T = T
+        self.alpha = alpha
+        self.criterion = nn.CrossEntropyLoss()
+
+    def forward(self, logits, labels, logits_ft):
+        loss_discr = self.criterion(logits, labels)
+
+        if logits_ft is None:
+            loss_energy = 0
+        else:
+            e_i = -sc.energyScore(logits, self.T) # [b,]
+            e_o = -sc.energyScore(logits_ft, self.T) # [b_ft,]
+            loss_energy = torch.reciprocal(1 + torch.exp(-e_i.mean()+e_o.mean()))
+        loss = loss_discr + self.alpha * loss_energy
+        return loss
+
+class LogLoss(nn.Module):
+    def __init__(self, T, alpha):
+        super(LogLoss, self).__init__()
+        self.T = T
+        self.alpha = alpha
+        self.criterion = nn.CrossEntropyLoss()
+
+    def forward(self, logits, labels, logits_ft):
+        loss_discr = self.criterion(logits, labels)
+
+        if logits_ft is None:
+            loss_energy = 0
+        else:
+            e_i = -sc.energyScore(logits, self.T) # [b,]
+            e_o = -sc.energyScore(logits_ft, self.T) # [b_ft,]
+            loss_energy = torch.log(1 + torch.exp(e_i.mean()-e_o.mean()))
+        loss = loss_discr + self.alpha * loss_energy
         return loss
