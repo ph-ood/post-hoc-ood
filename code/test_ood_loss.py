@@ -42,7 +42,7 @@ def score(logits, sname, **kwargs):
 
     elif sname == "energy":
         T = 1
-        s = -sc.energyScore(logits, T) # [b,]
+        s = sc.energyScore(logits, T) # [b,]
 
     elif sname == "dirichlet":
         # alpha = torch.tensor([0.0755, 0.0649, 0.0750, 0.0706, 0.0727, 0.0673, 0.0765, 0.0681, 0.0659, 0.0651]).to(DEVICE)
@@ -52,7 +52,7 @@ def score(logits, sname, **kwargs):
         s = kwargs["dirichletScore"](logits)
 
     else:
-        raise ValueError("Incorret score name")
+        raise ValueError("Incorrect score name")
 
     return s
 

@@ -222,12 +222,13 @@ if __name__ == "__main__":
 
     # Losses
     if args.loss == "DML":
-        criterion = DualMarginLoss(T = 1, m_i = -13, m_o = -2, alpha = 0.1) 
+        criterion = DualMarginLoss(T = 1, m_i = -11, m_o = -2, alpha = 0.1) 
         # for mnist, cifar10: -13, -2
+        # for mnist_35689, cifar10: -11, -2
     elif args.loss == "MCL":
         criterion = MCELoss(T=1, alpha=0.1)
     elif args.loss == "HEL":
-        criterion = HarmonicEnergyLoss(T=1, m_i=1, m_o=0, alpha=0.1)
+        criterion = HarmonicEnergyLoss(T=1, alpha=0.1)
     elif args.loss == "LOL":
         criterion = LogLoss(T=1, alpha=0.1)
     criterion = criterion.to(DEVICE)

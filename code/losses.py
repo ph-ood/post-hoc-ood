@@ -30,7 +30,7 @@ class DualMarginLoss(nn.Module):
 
 class HarmonicEnergyLoss(nn.Module):
 
-    def __init__(self, T, m_i, m_o, alpha):
+    def __init__(self, T, alpha):
         super(HarmonicEnergyLoss, self).__init__()
         self.T = T
         self.alpha = alpha
