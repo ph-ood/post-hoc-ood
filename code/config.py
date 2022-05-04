@@ -123,3 +123,11 @@ EPOCHS_FT = {
     "mnist_35689_patched" : 5,
     "mnist_patched" : 5,
 }
+
+# Specifies (m_in, m_out) values
+DML_PARAMS = {
+    "mnist" : (-11, -3),
+    "fmnist" : (-11, -3),
+    "cifar10" : (-11, -3),
+    "mnist_35689" : (-11, -3)
+}

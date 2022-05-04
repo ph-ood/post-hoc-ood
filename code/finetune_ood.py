@@ -225,7 +225,8 @@ if __name__ == "__main__":
 
     # Losses
     if loss_ft == "dml":
-        criterion = DualMarginLoss(T = 1, m_i = 1, m_o = 1, alpha = 0.1)
+        m_in, m_out = DML_PARAMS[dname]
+        criterion = DualMarginLoss(T = 1, m_i = m_in, m_o = m_out, alpha = 0.1)
     elif loss_ft == "dirichlet":
         criterion = DirichletLoss(n_classes = n_classes, path_wt = path_wt, beta = 0.001, device = DEVICE)
     else:
