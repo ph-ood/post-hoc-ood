@@ -119,6 +119,8 @@ if __name__ == "__main__":
     lr = LR[dname]
     n_classes = N_CLASSES[dname]
     n_epochs = EPOCHS[dname] 
+    if dname == "cifar10":
+        n_epochs = 5
 
     # Get config for data
     str_bn = "bn" if USE_BN else "no_bn"
@@ -222,9 +224,10 @@ if __name__ == "__main__":
 
     # Losses
     if args.loss == "DML":
-        criterion = DualMarginLoss(T = 1, m_i = -11, m_o = -2, alpha = 0.1) 
+        criterion = DualMarginLoss(T = 1, m_i = -10, m_o = -2, alpha = 0.1) 
         # for mnist, cifar10: -13, -2
         # for mnist_35689, cifar10: -11, -2
+        # for cifar10, fmnist: -10, -2
     elif args.loss == "MCL":
         criterion = MCELoss(T=1, alpha=0.1)
     elif args.loss == "HEL":
