@@ -1,6 +1,6 @@
 # CS-726 Course Project
   
-Root directory structure:
+Example directory structure:
 ```
 .
 ├── code
@@ -65,5 +65,5 @@ Root directory structure:
 - Sync to and from Drive when needed
 
 ## References
-- [Official Implementation](https://github.com/wetliu/energy_ood) (however, our code differs a lot from it)
+- [wetliu/energy_ood](https://github.com/wetliu/energy_ood)
 - [tayden/ood-metrics](https://github.com/tayden/ood-metrics)
