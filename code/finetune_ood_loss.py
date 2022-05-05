@@ -119,7 +119,7 @@ if __name__ == "__main__":
     lr = LR[dname]
     n_classes = N_CLASSES[dname]
     n_epochs = EPOCHS[dname] 
-    if dname == "cifar10":
+    if dname == "cifar10" or dname == "fmnist":
         n_epochs = 5
 
     # Get config for data
