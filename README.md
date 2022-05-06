@@ -1,4 +1,4 @@
-# CS-726 Course Project
+# Post-hoc Out-of-Distribution Detection
   
 Example directory structure:
 ```
@@ -67,3 +67,7 @@ Example directory structure:
 ## References
 - [wetliu/energy_ood](https://github.com/wetliu/energy_ood)
 - [tayden/ood-metrics](https://github.com/tayden/ood-metrics)
+
+---
+
+*(This work was done as a course project for CS726: Advanced Machine Learning, Spring 2022, IIT Bombay)*
